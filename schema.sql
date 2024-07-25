@@ -56,6 +56,7 @@ CREATE TABLE "books" (
     "edition_year" INTEGER,
     "category" TEXT NOT NULL,
     "genre" TEXT NOT NULL,
+    "location" TEXT NOT NULL, -- shelf, kindle, etc...
     "is_read" BOOLEAN DEFAULT FALSE,
     "sold" BOOLEAN DEFAULT FALSE,
     "lent" BOOLEAN DEFAULT FALSE,
