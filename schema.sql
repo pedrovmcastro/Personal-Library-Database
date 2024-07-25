@@ -3,7 +3,7 @@ CREATE TABLE "authors" (
     "id" INTEGER,
     "first_name" TEXT NOT NULL,
     "last_name" TEXT NOT NULL,
-    "nacionality" TEXT NOT NULL,
+    "nationality" TEXT NOT NULL,
     "date_of_birth" DATE,
     PRIMARY KEY("id")
 );
@@ -12,7 +12,7 @@ CREATE TABLE "translators" (
     "id" INTEGER,
     "first_name" TEXT NOT NULL,
     "last_name" TEXT NOT NULL,
-    "nacionality" TEXT NOT NULL,
+    "nationality" TEXT NOT NULL,
     "date_of_birth" DATE,
     "target_language" TEXT NOT NULL,
     PRIMARY KEY("id")
@@ -48,7 +48,7 @@ CREATE TABLE "ratings" (
 );
 
 CREATE TABLE "books" (
-    "id" INTEGER PRIMARY KEY,
+    "id" INTEGER,
     "title" TEXT NOT NULL,
     "language" TEXT NOT NULL,
     "year" INTEGER NOT NULL,
@@ -67,7 +67,8 @@ CREATE TABLE "books" (
     FOREIGN KEY("author_id") REFERENCES "authors"("id"),
     FOREIGN KEY("translator_id") REFERENCES "translators"("id"),
     FOREIGN KEY("publisher_id") REFERENCES "publishers"("id"),
-    FOREIGN KEY("rating_id") REFERENCES "ratings"("id")
+    FOREIGN KEY("rating_id") REFERENCES "ratings"("id"),
+    PRIMARY KEY("id")
 );
 
 CREATE TABLE "people" (
@@ -153,7 +154,7 @@ CREATE TABLE "borrows" (
     "entity_type" TEXT NOT NULL CHECK("entity_type" IN ('person', 'library')),
     "borrow_date" DATE NOT NULL DEFAULT CURRENT_DATE,
     "due_date" DATE, -- It can be null because with people you generally don't have a due date.
-    "fine" NUMERIC CHECK("fine" >= 0 AND "fine" = ROUND("fine", 2)) DEFAULT 0, -- It can be null because people don't charge fines; only libraries do. -- CORRIGIR ISSO AQUI
+    "fine" NUMERIC CHECK("fine" >= 0 AND "fine" = ROUND("fine", 2)) DEFAULT 0,
     "return_date" DATE,
     PRIMARY KEY("id"),
     FOREIGN KEY("lender_id") REFERENCES "people"("id"),
@@ -161,7 +162,7 @@ CREATE TABLE "borrows" (
     CHECK (
         ("entity_type" = 'person' AND "lender_id" IS NOT NULL AND "library_id" IS NULL)
         OR
-        ("entity_type" = 'library' AND "library_id" IS NOT NULL AND "person_id" IS NULL AND "due_date" IS NOT NULL AND "fine" IS NOT NULL)
+        ("entity_type" = 'library' AND "library_id" IS NOT NULL AND "person_id" IS NULL AND "due_date" IS NOT NULL)
     )
 );
 
@@ -179,17 +180,17 @@ CREATE TABLE "borrowed_books" (
     BOOKS }|--o| TRANSLATORS : translated
     BOOKS }|--|| PUBLISHERS : had
     BOOKS ||--o| RATINGS : have
-    BOOKS }|--o{ LOANS : loaned
+    BOOKS }|--o{ LENDS : lent
     BOOKS }|--o{ BORROWS : borrowed
-    LOANS }o--|| PEOPLE : by
+    LENDS }o--|| PEOPLE : by
     BORROWS }o--o| PEOPLE : from
     BORROWS }o--o| LIBRARIES : from
-    PEOPLE }o--o| ADDRESS : resided
-    LIBRARIES |o--|| ADDRESS : located
+    PEOPLE }o--o| ADDRESSES : resided
+    LIBRARIES |o--|| ADDRESSES : located
     BOOKS }|--o{ TRANSACTIONS : have
     TRANSACTIONS }|--o| STORES : with
     TRANSACTIONS }o--o| PEOPLE : with
-    STORES |o--o| ADDRESS : located
+    STORES |o--o| ADDRESSES : located
 
     books nao precisa de ratings, loans, borrows, transactions
     people nao precisa de loans, borrows, transactions
