@@ -58,6 +58,8 @@ CREATE TABLE "books" (
     "genre" TEXT NOT NULL,
     "is_read" BOOLEAN DEFAULT FALSE,
     "sold" BOOLEAN DEFAULT FALSE,
+    "lent" BOOLEAN DEFAULT FALSE,
+    "borrowed" BOOLEAN DEFAULT FALSE,
     "author_id" INTEGER NOT NULL,
     "translator_id" INTEGER,
     "publisher_id" INTEGER NOT NULL,
@@ -96,6 +98,7 @@ CREATE TABLE "libraries" (
     "email" TEXT,
     "website" TEXT,
     "address_id" INTEGER,
+    "fine" NUMERIC NOT NULL CHECK("fine" > 0),
     PRIMARY KEY("id"),
     FOREIGN KEY("address_id") REFERENCES "addresses"("id")
 );
@@ -150,7 +153,7 @@ CREATE TABLE "borrows" (
     "entity_type" TEXT NOT NULL CHECK("entity_type" IN ('person', 'library')),
     "borrow_date" DATE NOT NULL DEFAULT CURRENT_DATE,
     "due_date" DATE, -- It can be null because with people you generally don't have a due date.
-    "fine" DECIMAL(10, 2), -- It can be null because people don't charge fines; only libraries do. -- CORRIGIR ISSO AQUI
+    "fine" NUMERIC CHECK("fine" >= 0 AND "fine" = ROUND("fine", 2)) DEFAULT 0, -- It can be null because people don't charge fines; only libraries do. -- CORRIGIR ISSO AQUI
     "return_date" DATE,
     PRIMARY KEY("id"),
     FOREIGN KEY("lender_id") REFERENCES "people"("id"),
