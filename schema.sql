@@ -62,15 +62,21 @@ CREATE TABLE "books" (
     "sold" BOOLEAN DEFAULT FALSE,
     "lent" BOOLEAN DEFAULT FALSE,
     "borrowed" BOOLEAN DEFAULT FALSE,
-    "author_id" INTEGER NOT NULL,
     "translator_id" INTEGER,
     "publisher_id" INTEGER NOT NULL,
     "rating_id" INTEGER,
-    FOREIGN KEY("author_id") REFERENCES "authors"("id"),
     FOREIGN KEY("translator_id") REFERENCES "translators"("id"),
     FOREIGN KEY("publisher_id") REFERENCES "publishers"("id"),
     FOREIGN KEY("rating_id") REFERENCES "ratings"("id"),
     PRIMARY KEY("id")
+);
+
+CREATE TABLE "authored" (
+    "author_id" INTEGER NOT NULL, 
+    "book_id" INTEGER NOT NULL,
+    PRIMARY KEY("author_id", "book_id"),
+    FOREIGN KEY("author_id") REFERENCES "authors"("id"),
+    FOREIGN KEY("book_id") REFERENCES "books"("id")
 );
 
 CREATE TABLE "people" (
@@ -141,7 +147,7 @@ CREATE TABLE "lends" (
     FOREIGN KEY("borrower_id") REFERENCES "people"("id")
 );
 
-CREATE TABLE "lent_books" (
+CREATE TABLE "books_on_lend" (
     "lend_id" INTEGER,
     "book_id" INTEGER,
     FOREIGN KEY ("lend_id") REFERENCES "lends"("id"),
@@ -168,7 +174,7 @@ CREATE TABLE "borrows" (
     )
 );
 
-CREATE TABLE "borrowed_books" (
+CREATE TABLE "books_on_borrow" (
     "borrow_id" INTEGER,
     "book_id" INTEGER,
     FOREIGN KEY ("borrow_id") REFERENCES "borrows"("id"),
