@@ -14,7 +14,6 @@ CREATE TABLE "translators" (
     "last_name" TEXT NOT NULL,
     "nationality" TEXT NOT NULL,
     "date_of_birth" DATE,
-    "target_language" TEXT NOT NULL,
     PRIMARY KEY("id")
 )
 
@@ -50,7 +49,9 @@ CREATE TABLE "ratings" (
 CREATE TABLE "books" (
     "id" INTEGER,
     "title" TEXT NOT NULL,
-    "language" TEXT NOT NULL,
+    "original_language" TEXT NOT NULL,
+    "translated_language" TEXT,
+    "bilingual_edition" BOOLEAN DEFAULT FALSE,
     "year" INTEGER NOT NULL,
     "edition" INTEGER NOT NULL,
     "edition_year" INTEGER,
