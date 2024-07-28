@@ -49,8 +49,8 @@ CREATE TABLE "ratings" (
 CREATE TABLE "books" (
     "id" INTEGER,
     "title" TEXT NOT NULL,
+    "language" TEXT NOT NULL,
     "original_language" TEXT NOT NULL,
-    "translated_language" TEXT,
     "bilingual_edition" BOOLEAN DEFAULT FALSE,
     "year" INTEGER NOT NULL,
     "edition" INTEGER NOT NULL,
@@ -130,7 +130,7 @@ CREATE TABLE "transactions" (
     )
 );
 
-CREATE TABLE "transaction_books" (
+CREATE TABLE "books_in_transaction" (
     "transaction_id" INTEGER NOT NULL,
     "book_id" INTEGER NOT NULL,
     FOREIGN KEY ("transaction_id") REFERENCES "transactions"("id"),
@@ -209,3 +209,90 @@ CREATE TABLE "books_on_borrow" (
     address nao precisa de stores, libraries, people: two should be null - endereço pode ser de uma loja, ou de uma biblioteca, ou de uma pessoa
 
 """
+
+-- VIEWS
+
+-- To view all books in the library
+CREATE VIEW "all_books" AS
+SELECT "title", "year", "language", "location", "rating",
+        (SELECT "first_name", "last_name"
+         FROM "authors"
+         JOIN "authored" ON "authored"."author_id" = "author"."id"
+         WHERE "authored"."book_id" = "books"."id"
+         ORDER BY "authors"."last_name" LIMIT 1) AS "author"
+FROM "books"
+JOIN "ratings" ON "ratings"."book_id" = "books"."id"
+WHERE "location" = 'shelf' OR "location" = 'kindle'
+ORDER BY "location";
+
+-- To view all books on the shelf
+CREATE VIEW "shelf" AS
+SELECT "title", "year", "language", "rating",
+        (SELECT "first_name", "last_name"
+         FROM "authors"
+         JOIN "authored" ON "authored"."author_id" = "author"."id"
+         WHERE "authored"."book_id" = "books"."id"
+         ORDER BY "authors"."last_name" LIMIT 1) AS "author" 
+FROM "books"
+JOIN "ratings" ON "ratings"."book_id" = "books"."id"
+WHERE "location" = 'shelf';
+
+-- To view all books in the kindle
+CREATE VIEW "kindle" AS
+SELECT "title", "year", "language", "rating",
+        (SELECT "first_name", "last_name"
+         FROM "authors"
+         JOIN "authored" ON "authored"."author_id" = "author"."id"
+         WHERE "authored"."book_id" = "books"."id"
+         ORDER BY "authors"."last_name" LIMIT 1) AS "author"    
+FROM "books"
+JOIN "ratings" ON "ratings"."book_id" = "books"."id"
+WHERE "location" = 'kindle';
+
+-- To view all books that have already been read
+CREATE VIEW "been_read" AS
+SELECT "title", "year", "language", "rating",
+        (SELECT "first_name", "last_name"
+         FROM "authors"
+         JOIN "authored" ON "authored"."author_id" = "author"."id"
+         WHERE "authored"."book_id" = "books"."id"
+         ORDER BY "authors"."last_name" LIMIT 1) AS "author"
+FROM "books"
+JOIN "ratings" ON "ratings"."book_id" = "books"."id"
+WHERE "is_read" = TRUE;
+
+-- To view all books that were borrowed
+CREATE VIEW "borrowed_books" AS
+SELECT "title", "year", "language" , "rating",
+        (SELECT "first_name", "last_name"
+         FROM "authors"
+         JOIN "authored" ON "authored"."author_id" = "author"."id"
+         WHERE "authored"."book_id" = "books"."id"
+         ORDER BY "authors"."last_name" LIMIT 1) AS "author",
+FROM "books"
+JOIN "ratings" ON "ratings"."book_id" = "books"."id"
+WHERE "borrowed" = TRUE;
+
+-- To view all books that were lent
+CREATE VIEW "lent_books" AS
+SELECT "title", "year", "language", "rating",
+        (SELECT "first_name", "last_name"
+         FROM "authors"
+         JOIN "authored" ON "authored"."author_id" = "author"."id"
+         WHERE "authored"."book_id" = "books"."id"
+         ORDER BY "authors"."last_name" LIMIT 1) AS "author"
+FROM "books"
+JOIN "ratings" ON "ratings"."book_id" = "books"."id"
+WHERE "lent" = TRUE;
+
+-- To view all books that were sold (soft deletion)
+CREATE VIEW "sold_books" AS
+SELECT "title", "year", "language", "rating",
+        (SELECT "first_name", "last_name"
+         FROM "authors"
+         JOIN "authored" ON "authored"."author_id" = "author"."id"
+         WHERE "authored"."book_id" = "books"."id"
+         ORDER BY "authors"."last_name" LIMIT 1) AS "author"    
+FROM "books"
+JOIN "ratings" ON "ratings"."book_id" = "books"."id"
+WHERE "sold" = TRUE;
