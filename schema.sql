@@ -215,7 +215,7 @@ CREATE TABLE "books_on_borrow" (
 -- To view all books in the library
 CREATE VIEW "all_books" AS
 SELECT "title", "year", "language", "location", "rating",
-        (SELECT "first_name", "last_name"
+        (SELECT "first_name" || ' ' || "last_name"
          FROM "authors"
          JOIN "authored" ON "authored"."author_id" = "author"."id"
          WHERE "authored"."book_id" = "books"."id"
@@ -228,7 +228,7 @@ ORDER BY "location";
 -- To view all books on the shelf
 CREATE VIEW "shelf" AS
 SELECT "title", "year", "language", "rating",
-        (SELECT "first_name", "last_name"
+        (SELECT "first_name" || ' ' || "last_name"
          FROM "authors"
          JOIN "authored" ON "authored"."author_id" = "author"."id"
          WHERE "authored"."book_id" = "books"."id"
@@ -240,7 +240,7 @@ WHERE "location" = 'shelf';
 -- To view all books in the kindle
 CREATE VIEW "kindle" AS
 SELECT "title", "year", "language", "rating",
-        (SELECT "first_name", "last_name"
+        (SELECT "first_name" || ' ' || "last_name"
          FROM "authors"
          JOIN "authored" ON "authored"."author_id" = "author"."id"
          WHERE "authored"."book_id" = "books"."id"
@@ -252,7 +252,7 @@ WHERE "location" = 'kindle';
 -- To view all books that have already been read
 CREATE VIEW "been_read" AS
 SELECT "title", "year", "language", "rating",
-        (SELECT "first_name", "last_name"
+        (SELECT "first_name" || ' ' || "last_name"
          FROM "authors"
          JOIN "authored" ON "authored"."author_id" = "author"."id"
          WHERE "authored"."book_id" = "books"."id"
@@ -264,7 +264,7 @@ WHERE "is_read" = TRUE;
 -- To view all books that were borrowed
 CREATE VIEW "borrowed_books" AS
 SELECT "title", "year", "language" , "rating",
-        (SELECT "first_name", "last_name"
+        (SELECT "first_name" || ' ' || "last_name"
          FROM "authors"
          JOIN "authored" ON "authored"."author_id" = "author"."id"
          WHERE "authored"."book_id" = "books"."id"
@@ -276,7 +276,7 @@ WHERE "borrowed" = TRUE;
 -- To view all books that were lent
 CREATE VIEW "lent_books" AS
 SELECT "title", "year", "language", "rating",
-        (SELECT "first_name", "last_name"
+        (SELECT "first_name" || ' ' || "last_name"
          FROM "authors"
          JOIN "authored" ON "authored"."author_id" = "author"."id"
          WHERE "authored"."book_id" = "books"."id"
@@ -288,7 +288,7 @@ WHERE "lent" = TRUE;
 -- To view all books that were sold (soft deletion)
 CREATE VIEW "sold_books" AS
 SELECT "title", "year", "language", "rating",
-        (SELECT "first_name", "last_name"
+        (SELECT "first_name" || ' ' || "last_name"
          FROM "authors"
          JOIN "authored" ON "authored"."author_id" = "author"."id"
          WHERE "authored"."book_id" = "books"."id"
