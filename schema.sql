@@ -15,7 +15,7 @@ CREATE TABLE "translators" (
     "nationality" TEXT NOT NULL,
     "date_of_birth" DATE,
     PRIMARY KEY("id")
-)
+);
 
 CREATE TABLE "addresses" (
     "id" INTEGER,
@@ -170,7 +170,7 @@ CREATE TABLE "borrows" (
     CHECK (
         ("entity_type" = 'person' AND "lender_id" IS NOT NULL AND "library_id" IS NULL)
         OR
-        ("entity_type" = 'library' AND "library_id" IS NOT NULL AND "person_id" IS NULL AND "due_date" IS NOT NULL)
+        ("entity_type" = 'library' AND "library_id" IS NOT NULL AND "lender_id" IS NULL AND "due_date" IS NOT NULL)
     )
 );
 
@@ -181,34 +181,6 @@ CREATE TABLE "books_on_borrow" (
     FOREIGN KEY ("book_id") REFERENCES "books"("id"),
     PRIMARY KEY ("borrow_id", "book_id")
 );
-
-
-"""
-    BOOKS }|--|| AUTHORS : writed
-    BOOKS }|--o| TRANSLATORS : translated
-    BOOKS }|--|| PUBLISHERS : had
-    BOOKS ||--o| RATINGS : have
-    BOOKS }|--o{ LENDS : lent
-    BOOKS }|--o{ BORROWS : borrowed
-    LENDS }o--|| PEOPLE : by
-    BORROWS }o--o| PEOPLE : from
-    BORROWS }o--o| LIBRARIES : from
-    PEOPLE }o--o| ADDRESSES : resided
-    LIBRARIES |o--|| ADDRESSES : located
-    BOOKS }|--o{ TRANSACTIONS : have
-    TRANSACTIONS }|--o| STORES : with
-    TRANSACTIONS }o--o| PEOPLE : with
-    STORES |o--o| ADDRESSES : located
-
-    books nao precisa de ratings, loans, borrows, transactions
-    people nao precisa de loans, borrows, transactions
-    people nao precisa de address, address can be null
-    stores nao precisa de address, address can be null
-    transactions nao precisa de stores, people: only one should be null - transacao pode ser com pessoas ou com uma loja
-    borrows nao precisa de libraries, people: only one can be null - emprestimos podem ser feitos com pessoas com uma biblioteca
-    address nao precisa de stores, libraries, people: two should be null - endereço pode ser de uma loja, ou de uma biblioteca, ou de uma pessoa
-
-"""
 
 -- VIEWS
 
@@ -268,7 +240,7 @@ SELECT "title", "year", "language" , "rating",
          FROM "authors"
          JOIN "authored" ON "authored"."author_id" = "author"."id"
          WHERE "authored"."book_id" = "books"."id"
-         ORDER BY "authors"."last_name" LIMIT 1) AS "author",
+         ORDER BY "authors"."last_name" LIMIT 1) AS "author"
 FROM "books"
 JOIN "ratings" ON "ratings"."book_id" = "books"."id"
 WHERE "borrowed" = TRUE;
