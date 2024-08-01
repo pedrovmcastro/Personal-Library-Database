@@ -1,0 +1,14 @@
+o que simplificar?
+
+1- remover a tabela adresses e as colunas que se referem a ela;
+2- remover a feature de dois autores por livro... [pensar a respeito]
+    caso haja dois autores é possivel adicionar os dois ao titulo do livro separados por um '&'
+    e recomendar ao usuário que utilize a funçao LIKE para consultas que envolvam autores;
+3- remover algumas colunas de books;
+4- remover as tabelas people, store e libraries; e criar uma coluna que os represente, assim tipo: "contact";
+5- excluir a branch 'features/loans';
+6- refazer o diagrama ER;
+
+só ai já vai simplificar bastante e daí não vai ser preciso, por exemplo, criar tantos elementos na hora de cadastrar um livro ou um empréstimo.
+trabalhar nessa branch vai devolver a branch principal uma aplicação bem mais amigável para uso e manutenção...
+
