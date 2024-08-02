@@ -3,7 +3,7 @@ CREATE TABLE "authors" (
     "id" INTEGER,
     "first_name" TEXT NOT NULL,
     "last_name" TEXT NOT NULL,
-    "nationality" TEXT NOT NULL,
+    "nationality" TEXT,
     "date_of_birth" DATE,
     PRIMARY KEY("id")
 );
@@ -12,7 +12,7 @@ CREATE TABLE "translators" (
     "id" INTEGER,
     "first_name" TEXT NOT NULL,
     "last_name" TEXT NOT NULL,
-    "nationality" TEXT NOT NULL,
+    "nationality" TEXT,
     "date_of_birth" DATE,
     PRIMARY KEY("id")
 );
@@ -24,8 +24,7 @@ CREATE TABLE "publishers" (
     "phone_number" TEXT,
     "email" TEXT,
     "website" TEXT,
-    PRIMARY KEY("id"),
-    FOREIGN KEY("address_id") REFERENCES "addresses"("id")
+    PRIMARY KEY("id")
 );
 
 CREATE TABLE "ratings" (
@@ -41,7 +40,7 @@ CREATE TABLE "books" (
     "title" TEXT NOT NULL,
     "language" TEXT NOT NULL,
     "original_language" TEXT NOT NULL,
-    "year" INTEGER NOT NULL,
+    "year" INTEGER,
     "edition" INTEGER,
     "edition_year" INTEGER,
     "category" TEXT NOT NULL,
@@ -60,6 +59,7 @@ CREATE TABLE "books" (
     PRIMARY KEY("id")
 );
 
+-- Association table authors-book
 CREATE TABLE "authored" (
     "author_id" INTEGER NOT NULL, 
     "book_id" INTEGER NOT NULL,
@@ -75,10 +75,11 @@ CREATE TABLE "transactions" (
     "timestamp" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "entity_type" TEXT NOT NULL CHECK("entity_type" IN ('person', 'store')),
     "entity_name" TEXT NOT NULL,
-    "contact" TEXT,
+    "contact" TEXT, -- phone number or email
     PRIMARY KEY("id"),
 );
 
+-- Association table books-transaction
 CREATE TABLE "books_in_transaction" (
     "transaction_id" INTEGER NOT NULL,
     "book_id" INTEGER NOT NULL,
@@ -95,6 +96,7 @@ CREATE TABLE "lends" (
     PRIMARY KEY("id"),
 );
 
+-- Association table books-lend
 CREATE TABLE "books_on_lend" (
     "lend_id" INTEGER,
     "book_id" INTEGER,
@@ -115,6 +117,7 @@ CREATE TABLE "borrows" (
     PRIMARY KEY("id"),
 );
 
+-- Association table books-borrow
 CREATE TABLE "books_on_borrow" (
     "borrow_id" INTEGER,
     "book_id" INTEGER,
@@ -134,7 +137,7 @@ SELECT "title", "year", "language", "location", "rating",
          WHERE "authored"."book_id" = "books"."id"
          ORDER BY "authors"."last_name" LIMIT 1) AS "author"
 FROM "books"
-JOIN "ratings" ON "ratings"."book_id" = "books"."id"
+LEFT JOIN "ratings" ON "ratings"."book_id" = "books"."id" -- Since a book may not have a rating, the left join is necessary to avoid omitting results
 ORDER BY "location", "title";
 
 -- To view all books on the shelf
@@ -146,7 +149,7 @@ SELECT "title", "year", "language", "rating",
          WHERE "authored"."book_id" = "books"."id"
          ORDER BY "authors"."last_name" LIMIT 1) AS "author" 
 FROM "books"
-JOIN "ratings" ON "ratings"."book_id" = "books"."id"
+LEFT JOIN "ratings" ON "ratings"."book_id" = "books"."id" 
 WHERE "location" = 'shelf',
 ORDER BY "title";
 
@@ -159,7 +162,7 @@ SELECT "title", "year", "language", "rating",
          WHERE "authored"."book_id" = "books"."id"
          ORDER BY "authors"."last_name" LIMIT 1) AS "author"    
 FROM "books"
-JOIN "ratings" ON "ratings"."book_id" = "books"."id"
+LEFT JOIN "ratings" ON "ratings"."book_id" = "books"."id"
 WHERE "location" = 'kindle',
 ORDER BY "title";
 
@@ -172,45 +175,59 @@ SELECT "title", "year", "language", "rating",
          WHERE "authored"."book_id" = "books"."id"
          ORDER BY "authors"."last_name" LIMIT 1) AS "author"
 FROM "books"
-JOIN "ratings" ON "ratings"."book_id" = "books"."id"
+LEFT JOIN "ratings" ON "ratings"."book_id" = "books"."id"
 WHERE "is_read" = TRUE,
 ORDER BY "title";
 
 -- To view all books that were borrowed
 CREATE VIEW "borrowed_books" AS
-SELECT "title", "year", "language" , "rating",
+SELECT "title", "year", "language" , "rating", "entity_name" AS "lender", "borrow_date", "due_date", "total_fine",
         (SELECT "first_name" || ' ' || "last_name"
          FROM "authors"
          JOIN "authored" ON "authored"."author_id" = "author"."id"
          WHERE "authored"."book_id" = "books"."id"
          ORDER BY "authors"."last_name" LIMIT 1) AS "author"
 FROM "books"
-JOIN "ratings" ON "ratings"."book_id" = "books"."id"
+LEFT JOIN "ratings" ON "ratings"."book_id" = "books"."id"
+JOIN "books_on_borrow" ON "books_on_borrow"."book_id" = "books"."id"
+JOIN "borrows" ON "borrows"."id" = "books_on_borrow"."borrow_id"
 WHERE "borrowed" = TRUE,
-ORDER BY "title";
+ORDER BY "due_date";
 
 -- To view all books that were lent
 CREATE VIEW "lent_books" AS
-SELECT "title", "year", "language", "rating",
+SELECT "title", "year", "language", "rating", "borrower_name" AS "borrower", "lend_date",
         (SELECT "first_name" || ' ' || "last_name"
          FROM "authors"
          JOIN "authored" ON "authored"."author_id" = "author"."id"
          WHERE "authored"."book_id" = "books"."id"
          ORDER BY "authors"."last_name" LIMIT 1) AS "author"
 FROM "books"
-JOIN "ratings" ON "ratings"."book_id" = "books"."id"
+LEFT JOIN "ratings" ON "ratings"."book_id" = "books"."id"
+JOIN "books_on_lend" ON "books_on_lend"."book_id" = "books"."id"
+JOIN "lends" ON "lends"."id" = "books_on_lend"."lend_id"
 WHERE "lent" = TRUE,
-ORDER BY "title";
+ORDER BY "lend_date";
 
 -- To view all books that were sold (soft deletion)
 CREATE VIEW "sold_books" AS
-SELECT "title", "year", "language", "rating",
+SELECT "title", "year", "language", "rating", "entity_name" AS "buyer", "value", "timestamp",
         (SELECT "first_name" || ' ' || "last_name"
          FROM "authors"
          JOIN "authored" ON "authored"."author_id" = "author"."id"
          WHERE "authored"."book_id" = "books"."id"
          ORDER BY "authors"."last_name" LIMIT 1) AS "author"    
 FROM "books"
-JOIN "ratings" ON "ratings"."book_id" = "books"."id"
+LEFT JOIN "ratings" ON "ratings"."book_id" = "books"."id"
+JOIN "books_in_transaction" ON "books_in_transaction"."book_id" = "books"."id"
+JOIN "transactions" ON "transactions"."id" = "books_in_transaction"."transaction_id"
 WHERE "sold" = TRUE,
-ORDER BY "title";
+ORDER BY "timestamp";
+
+-- TRIGGERS
+
+-- 1. quando é adicionada uma nova transação em que algum livro é vendido, um trigger para atualizar a tabela livros sold = TRUE
+-- 2. quando é adicionado um novo empréstimo lend (emprestou para alguém), um trigger para atualizar a tabela livros lent = TRUE
+-- 3. quando é adicionado um novo empréstimo borrow (pegou emprestado de alguém), um trigger para atualizar a tabela livros borrow = TRUE
+
+-- INDEXES (?)
