@@ -17,15 +17,6 @@ CREATE TABLE "translators" (
     PRIMARY KEY("id")
 );
 
-CREATE TABLE "addresses" (
-    "id" INTEGER,
-    "street" TEXT NOT NULL,
-    "city" TEXT NOT NULL,
-    "country" TEXT NOT NULL,
-    "postal_code" TEXT NOT NULL,
-    PRIMARY KEY("id")
-);
-
 CREATE TABLE "publishers" (
     "id" INTEGER,
     "name" TEXT NOT NULL,
@@ -33,7 +24,6 @@ CREATE TABLE "publishers" (
     "phone_number" TEXT,
     "email" TEXT,
     "website" TEXT,
-    "address_id" INTEGER,
     PRIMARY KEY("id"),
     FOREIGN KEY("address_id") REFERENCES "addresses"("id")
 );
@@ -51,19 +41,18 @@ CREATE TABLE "books" (
     "title" TEXT NOT NULL,
     "language" TEXT NOT NULL,
     "original_language" TEXT NOT NULL,
-    "bilingual_edition" BOOLEAN DEFAULT FALSE,
     "year" INTEGER NOT NULL,
-    "edition" INTEGER NOT NULL,
+    "edition" INTEGER,
     "edition_year" INTEGER,
     "category" TEXT NOT NULL,
     "genre" TEXT NOT NULL,
-    "location" TEXT NOT NULL, -- shelf, kindle, etc...
+    "location" TEXT, -- shelf, kindle, etc...
     "is_read" BOOLEAN DEFAULT FALSE,
     "sold" BOOLEAN DEFAULT FALSE,
     "lent" BOOLEAN DEFAULT FALSE,
     "borrowed" BOOLEAN DEFAULT FALSE,
     "translator_id" INTEGER,
-    "publisher_id" INTEGER NOT NULL,
+    "publisher_id" INTEGER,
     "rating_id" INTEGER,
     FOREIGN KEY("translator_id") REFERENCES "translators"("id"),
     FOREIGN KEY("publisher_id") REFERENCES "publishers"("id"),
@@ -79,55 +68,15 @@ CREATE TABLE "authored" (
     FOREIGN KEY("book_id") REFERENCES "books"("id")
 );
 
-CREATE TABLE "people" (
-    "id" INTEGER,
-    "name" TEXT NOT NULL,
-    "phone_number" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "address_id" INTEGER,
-    PRIMARY KEY("id"),
-    FOREIGN KEY("address_id") REFERENCES "addresses"("id")
-);
-
-CREATE TABLE "stores" (
-    "id" INTEGER,
-    "name" TEXT NOT NULL,
-    "phone_number" TEXT,
-    "email" TEXT,
-    "website" TEXT,
-    "address_id" INTEGER,
-    PRIMARY KEY("id"),
-    FOREIGN KEY("address_id") REFERENCES "addresses"("id")
-);
-
-CREATE TABLE "libraries" (
-    "id" INTEGER,
-    "name" TEXT NOT NULL,
-    "phone_number" TEXT,
-    "email" TEXT,
-    "website" TEXT,
-    "address_id" INTEGER,
-    "fine" NUMERIC NOT NULL CHECK("fine" > 0),
-    PRIMARY KEY("id"),
-    FOREIGN KEY("address_id") REFERENCES "addresses"("id")
-);
-
 CREATE TABLE "transactions" (
     "id" INTEGER,
     "type" TEXT NOT NULL CHECK("type" IN ('purchase', 'sale')),
     "value" NUMERIC NOT NULL,
     "timestamp" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "entity_type" TEXT NOT NULL CHECK("entity_type" IN ('person', 'store')),
-    "store_id" INTEGER,
-    "person_id" INTEGER,
+    "entity_name" TEXT NOT NULL,
+    "contact" TEXT,
     PRIMARY KEY("id"),
-    FOREIGN KEY ("store_id") REFERENCES "stores"("id"),
-    FOREIGN KEY ("person_id") REFERENCES "people"("id"),
-    CHECK (
-        ("entity_type" = 'store' AND "store_id" IS NOT NULL AND "person_id" IS NULL)
-        OR
-        ("entity_type" = 'person' AND "person_id" IS NOT NULL AND "store_id" IS NULL)
-    )
 );
 
 CREATE TABLE "books_in_transaction" (
@@ -140,11 +89,10 @@ CREATE TABLE "books_in_transaction" (
 
 CREATE TABLE "lends" (
     "id" INTEGER,
-    "borrower_id" INTEGER NOT NULL,
     "lend_date" DATE NOT NULL DEFAULT CURRENT_DATE,
     "return_date" DATE,
+    "borrower_name" TEXT NOT NULL,
     PRIMARY KEY("id"),
-    FOREIGN KEY("borrower_id") REFERENCES "people"("id")
 );
 
 CREATE TABLE "books_on_lend" (
@@ -157,21 +105,14 @@ CREATE TABLE "books_on_lend" (
 
 CREATE TABLE "borrows" (
     "id" INTEGER,
-    "lender_id" INTEGER,
-    "library_id" INTEGER,
     "entity_type" TEXT NOT NULL CHECK("entity_type" IN ('person', 'library')),
+    "entity_name" TEXT NOT NULL,
     "borrow_date" DATE NOT NULL DEFAULT CURRENT_DATE,
     "due_date" DATE, -- It can be null because with people you generally don't have a due date.
-    "fine" NUMERIC CHECK("fine" >= 0 AND "fine" = ROUND("fine", 2)) DEFAULT 0,
+    "fine_per_day" NUMERIC CHECK("fine" >= 0 AND "fine" = ROUND("fine", 2)) DEFAULT 0,
+    "total_fine" NUMERIC CHECK("fine" >= 0 AND "fine" = ROUND("fine", 2)) DEFAULT 0,
     "return_date" DATE,
     PRIMARY KEY("id"),
-    FOREIGN KEY("lender_id") REFERENCES "people"("id"),
-    FOREIGN KEY("library_id") REFERENCES "libraries"("id"),
-    CHECK (
-        ("entity_type" = 'person' AND "lender_id" IS NOT NULL AND "library_id" IS NULL)
-        OR
-        ("entity_type" = 'library' AND "library_id" IS NOT NULL AND "lender_id" IS NULL AND "due_date" IS NOT NULL)
-    )
 );
 
 CREATE TABLE "books_on_borrow" (
