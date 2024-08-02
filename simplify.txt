@@ -1,11 +1,5 @@
 o que simplificar?
 
-1- remover a tabela adresses e as colunas que se referem a ela;
-2- remover a feature de dois autores por livro... [pensar a respeito]
-    caso haja dois autores é possivel adicionar os dois ao nome do autor separados por um '&'
-    e recomendar ao usuário que utilize a funçao LIKE para consultas que envolvam autores;
-3- remover algumas colunas de books;
-4- remover as tabelas people, store e libraries; e criar uma coluna que os represente, assim tipo: "contact";
 5- excluir a branch 'features/loans';
 6- refazer o diagrama ER;
 
