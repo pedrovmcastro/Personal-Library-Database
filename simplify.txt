@@ -1,8 +1,0 @@
-o que simplificar?
-
-5- excluir a branch 'features/loans';
-6- refazer o diagrama ER;
-
-só ai já vai simplificar bastante e daí não vai ser preciso, por exemplo, criar tantos elementos na hora de cadastrar um livro ou um empréstimo.
-trabalhar nessa branch vai devolver a branch principal uma aplicação bem mais amigável para uso e manutenção...
-
