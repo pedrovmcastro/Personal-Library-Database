@@ -135,8 +135,7 @@ SELECT "title", "year", "language", "location", "rating",
          ORDER BY "authors"."last_name" LIMIT 1) AS "author"
 FROM "books"
 JOIN "ratings" ON "ratings"."book_id" = "books"."id"
-WHERE "location" = 'shelf' OR "location" = 'kindle'
-ORDER BY "location";
+ORDER BY "location", "title";
 
 -- To view all books on the shelf
 CREATE VIEW "shelf" AS
@@ -148,7 +147,8 @@ SELECT "title", "year", "language", "rating",
          ORDER BY "authors"."last_name" LIMIT 1) AS "author" 
 FROM "books"
 JOIN "ratings" ON "ratings"."book_id" = "books"."id"
-WHERE "location" = 'shelf';
+WHERE "location" = 'shelf',
+ORDER BY "title";
 
 -- To view all books in the kindle
 CREATE VIEW "kindle" AS
@@ -160,7 +160,8 @@ SELECT "title", "year", "language", "rating",
          ORDER BY "authors"."last_name" LIMIT 1) AS "author"    
 FROM "books"
 JOIN "ratings" ON "ratings"."book_id" = "books"."id"
-WHERE "location" = 'kindle';
+WHERE "location" = 'kindle',
+ORDER BY "title";
 
 -- To view all books that have already been read
 CREATE VIEW "been_read" AS
@@ -172,7 +173,8 @@ SELECT "title", "year", "language", "rating",
          ORDER BY "authors"."last_name" LIMIT 1) AS "author"
 FROM "books"
 JOIN "ratings" ON "ratings"."book_id" = "books"."id"
-WHERE "is_read" = TRUE;
+WHERE "is_read" = TRUE,
+ORDER BY "title";
 
 -- To view all books that were borrowed
 CREATE VIEW "borrowed_books" AS
@@ -184,7 +186,8 @@ SELECT "title", "year", "language" , "rating",
          ORDER BY "authors"."last_name" LIMIT 1) AS "author"
 FROM "books"
 JOIN "ratings" ON "ratings"."book_id" = "books"."id"
-WHERE "borrowed" = TRUE;
+WHERE "borrowed" = TRUE,
+ORDER BY "title";
 
 -- To view all books that were lent
 CREATE VIEW "lent_books" AS
@@ -196,7 +199,8 @@ SELECT "title", "year", "language", "rating",
          ORDER BY "authors"."last_name" LIMIT 1) AS "author"
 FROM "books"
 JOIN "ratings" ON "ratings"."book_id" = "books"."id"
-WHERE "lent" = TRUE;
+WHERE "lent" = TRUE,
+ORDER BY "title";
 
 -- To view all books that were sold (soft deletion)
 CREATE VIEW "sold_books" AS
@@ -208,4 +212,5 @@ SELECT "title", "year", "language", "rating",
          ORDER BY "authors"."last_name" LIMIT 1) AS "author"    
 FROM "books"
 JOIN "ratings" ON "ratings"."book_id" = "books"."id"
-WHERE "sold" = TRUE;
+WHERE "sold" = TRUE,
+ORDER BY "title";
