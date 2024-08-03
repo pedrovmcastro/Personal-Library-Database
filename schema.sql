@@ -295,7 +295,7 @@ END;
 
 -- To optmize this database is created indexes, to order the data allowing binary search; 
 -- much faster than linear search in unordered data.
--- The queries will bring the answers faster.
+-- The queries, the views and the triggers will bring the answers faster.
 
 CREATE INDEX "books_index" ON "books"("id");
 
