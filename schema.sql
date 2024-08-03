@@ -1,4 +1,7 @@
 -- In this SQL file, write (and comment!) the schema of your database, including the CREATE TABLE, CREATE INDEX, CREATE VIEW, etc. statements that compose it
+
+-- TABLES 
+
 CREATE TABLE "authors" (
     "id" INTEGER,
     "first_name" TEXT NOT NULL,
@@ -226,8 +229,66 @@ ORDER BY "timestamp";
 
 -- TRIGGERS
 
--- 1. quando é adicionada uma nova transação em que algum livro é vendido, um trigger para atualizar a tabela livros sold = TRUE
--- 2. quando é adicionado um novo empréstimo lend (emprestou para alguém), um trigger para atualizar a tabela livros lent = TRUE
--- 3. quando é adicionado um novo empréstimo borrow (pegou emprestado de alguém), um trigger para atualizar a tabela livros borrow = TRUE
+-- Trigger to update books.sold to TRUE when a new sale transaction is inserted
+CREATE TRIGGER "sold"
+AFTER INSERT ON "transactions"
+FOR EACH ROW
+WHEN NEW."type" = 'sale'
+BEGIN
+    UPDATE "books"
+    SET "sold" = TRUE
+    WHERE "id" IN (
+        SELECT "book_id"
+        FROM "books_in_transaction"
+        WHERE "transaction_id" = NEW."id"
+    );
+END;
+
+-- Trigger to update books.sold to FALSE when a new purchase transaction is inserted for a book that was already sold
+CREATE TRIGGER "bought"
+AFTER INSERT ON "transactions"
+FOR EACH ROW
+WHEN NEW."type" = 'purchase' 
+BEGIN
+    UPDATE "books"
+    SET "sold" = FALSE
+    WHERE "id" IN (
+        SELECT "book_id"
+        FROM "books_in_transaction"
+        WHERE "transaction_id" = NEW."id" 
+        ) AND "sold" = TRUE;
+END;
+
+-- Trigger to update books.lent to TRUE when a new lend is inserted
+CREATE TRIGGER "lent"
+AFTER INSERT ON "lends"
+FOR EACH ROW
+BEGIN
+    UPDATE "books"
+    SET "lent" = TRUE
+    WHERE "id" IN (
+        SELECT "book_id"
+        FROM "books_on_lend"
+        WHERE "lend"."id" = NEW."id"
+    );
+END;
+
+-- Trigger to update books.borrowed to TRUE when a new borrow is inserted
+CREATE TRIGGER "borrowed"
+AFTER INSERT ON "borrows"
+FOR EACH ROW
+BEGIN
+    UPDATE "books"
+    SET "borrowed" = TRUE
+    WHERE "id" IN (
+        SELECT "book_id"
+        FROM "books_on_borrow"
+        WHERE "borrow"."id" = NEW."id"
+    );
+END;
+
+-- A QUESTÃO DA MULTA DA BIBLIOTECA PODE SER UMA FEATURE PARA A VERSÃO 1.1 E dai voce diz isso no design.md
+-- uma outra escolha que voce no momento pensa em não implementar, registrar as entregas... tanto dos lends (quando te devolvem o livro que vc emprestou)
+-- quanto no borrow (quando vc devolve o livro que pegou emprestado, seja de uma pessoa ou de uma outra biblioteca) dai aplicar as multas baseado nas diferenças das datas
 
 -- INDEXES (?)
