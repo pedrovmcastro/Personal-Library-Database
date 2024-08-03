@@ -301,13 +301,10 @@ CREATE INDEX "books_index" ON "books"("id");
 
 CREATE INDEX "title_index" ON "books"("title");
 
+CREATE INDEX "books_location_index" ON "books"("location");
+
 CREATE INDEX "authors_index" ON "authors"("id");
 
 CREATE INDEX "authors_last_name_index" ON "authors"("last_name");
 
 CREATE INDEX "transactions_index" ON "transactions"("id");
-
-CREATE INDEX "lends_index" ON "lends"("id");
-
-CREATE INDEX "borrows_index" ON "borrows"("id");
-
