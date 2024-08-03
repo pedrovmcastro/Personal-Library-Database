@@ -291,4 +291,20 @@ END;
 -- uma outra escolha que voce no momento pensa em não implementar, registrar as entregas... tanto dos lends (quando te devolvem o livro que vc emprestou)
 -- quanto no borrow (quando vc devolve o livro que pegou emprestado, seja de uma pessoa ou de uma outra biblioteca) dai aplicar as multas baseado nas diferenças das datas
 
--- INDEXES (?)
+-- INDEXES
+
+-- To optmize this database is created indexes, to order the data allowing binary search; 
+-- much faster than linear search in unordered data.
+-- The queries will bring the answers faster.
+
+CREATE INDEX "books_index" ON "books"("id");
+
+CREATE INDEX "title_index" ON "books"("title");
+
+CREATE INDEX "authors_index" ON "authors"("id");
+
+CREATE INDEX "authors_last_name_index" ON "authors"("last_name");
+
+CREATE INDEX "translators_last_name_index" ON "translators"("last_name");
+
+CREATE INDEX "publishers_name_index" ON "publishers"("name");
