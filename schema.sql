@@ -305,6 +305,9 @@ CREATE INDEX "authors_index" ON "authors"("id");
 
 CREATE INDEX "authors_last_name_index" ON "authors"("last_name");
 
-CREATE INDEX "translators_last_name_index" ON "translators"("last_name");
+CREATE INDEX "transactions_index" ON "transactions"("id");
 
-CREATE INDEX "publishers_name_index" ON "publishers"("name");
+CREATE INDEX "lends_index" ON "lends"("id");
+
+CREATE INDEX "borrows_index" ON "borrows"("id");
+
