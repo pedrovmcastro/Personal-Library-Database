@@ -8,9 +8,9 @@
 
 INSERT INTO "authors"("first_name", "last_name", "nationality")
 VALUES
-("Machado de", "Assis", "brazilian"),
-("José de", "Alencar", "brazilian"),
-("Dyonelio", "Machado", "brazilian");
+('Machado de', 'Assis', 'brazilian'),
+('José de', 'Alencar', 'brazilian'),
+('Dyonelio', 'Machado', 'brazilian');
 
 
 -- we don't have translators in this books
@@ -21,8 +21,8 @@ VALUES
 
 INSERT INTO "publishers"("name")
 VALUES
-("Objetivo"),
-("Ática");
+('Objetivo'),
+('Ática');
 
 -- finally we can add the books with the 2 foreign keys:
 
@@ -30,10 +30,10 @@ VALUES
 
 INSERT INTO "books" ("title", "language", "original_language", "year", "category", "genre", "location", "publisher_id")
 VALUES
-("Memórias Póstumas de Brás Cubas", "portuguese", "portuguese", "1881", "brazilian literature", "novel", "shelf", 2),
-("Dom Casmurro", "portuguese", "portuguese", "1899", "brazilian literature", "novel", "shelf", 1),
-("Iracema", "portuguese", "portuguese", "1865", "brazilian literature", "novel", "shelf", 1),
-("Os Ratos", "portuguese", "portuguese", "1935", "brazilain literature", "novel", "shelf", 2);
+('Memórias Póstumas de Brás Cubas', 'portuguese', 'portuguese', '1881', 'brazilian literature', 'novel', 'shelf', 2),
+('Dom Casmurro', 'portuguese', 'portuguese', '1899', 'brazilian literature', 'novel', 'shelf', 1),
+('Iracema', 'portuguese', 'portuguese', '1865', 'brazilian literature', 'novel', 'shelf', 1),
+('Os Ratos', 'portuguese', 'portuguese', '1935', 'brazilain literature', 'novel', 'shelf', 2);
 
 -- AUTHORED
 
