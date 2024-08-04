@@ -24,7 +24,7 @@ VALUES
 ("Objetivo"),
 ("Ática");
 
--- finally the books with 2 foreign keys:
+-- finally we can add the books with the 2 foreign keys:
 
 -- BOOKS
 
@@ -48,4 +48,22 @@ VALUES
 (2, 3),
 (3, 4);
 
+-- UPDATE DATABASE 
+
+-- The user might add a book that he already read, so he can update the book just after added it
+
+-- In my case I have already read all the four books, so the update query is easy
+
+UPDATE "books" SET "is_read" = TRUE;
+
+-- RATINGS
+
+-- The user can add a review or just a rating to the books
+
+INSERT INTO "ratings" ("book_id", "rating")
+VALUES
+(1, 5),
+(2, 4.8),
+(3, 3.9),
+(4, 3.5);
 
