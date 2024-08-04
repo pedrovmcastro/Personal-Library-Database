@@ -79,7 +79,7 @@ CREATE TABLE "transactions" (
     "entity_type" TEXT NOT NULL CHECK("entity_type" IN ('person', 'store')),
     "entity_name" TEXT NOT NULL,
     "contact" TEXT, -- phone number or email
-    PRIMARY KEY("id"),
+    PRIMARY KEY("id")
 );
 
 -- Association table books-transaction
@@ -96,7 +96,7 @@ CREATE TABLE "lends" (
     "lend_date" DATE NOT NULL DEFAULT CURRENT_DATE,
     "return_date" DATE,
     "borrower_name" TEXT NOT NULL,
-    PRIMARY KEY("id"),
+    PRIMARY KEY("id")
 );
 
 -- Association table books-lend
@@ -114,10 +114,10 @@ CREATE TABLE "borrows" (
     "entity_name" TEXT NOT NULL,
     "borrow_date" DATE NOT NULL DEFAULT CURRENT_DATE,
     "due_date" DATE, -- It can be null because with people you generally don't have a due date.
-    "fine_per_day" NUMERIC CHECK("fine" >= 0 AND "fine" = ROUND("fine", 2)) DEFAULT 0,
-    "total_fine" NUMERIC CHECK("fine" >= 0 AND "fine" = ROUND("fine", 2)) DEFAULT 0,
+    "fine_per_day" NUMERIC CHECK("fine_per_day" >= 0 AND "fine_per_day" = ROUND("fine_per_day", 2)) DEFAULT 0,
+    "total_fine" NUMERIC CHECK("total_fine" >= 0 AND "total_fine" = ROUND("total_fine", 2)) DEFAULT 0,
     "return_date" DATE,
-    PRIMARY KEY("id"),
+    PRIMARY KEY("id")
 );
 
 -- Association table books-borrow
@@ -153,7 +153,7 @@ SELECT "title", "year", "language", "rating",
          ORDER BY "authors"."last_name" LIMIT 1) AS "author" 
 FROM "books"
 LEFT JOIN "ratings" ON "ratings"."book_id" = "books"."id" 
-WHERE "location" = 'shelf',
+WHERE "location" = 'shelf'
 ORDER BY "title";
 
 -- To view all books in the kindle
@@ -166,7 +166,7 @@ SELECT "title", "year", "language", "rating",
          ORDER BY "authors"."last_name" LIMIT 1) AS "author"    
 FROM "books"
 LEFT JOIN "ratings" ON "ratings"."book_id" = "books"."id"
-WHERE "location" = 'kindle',
+WHERE "location" = 'kindle'
 ORDER BY "title";
 
 -- To view all books that have already been read
@@ -179,7 +179,7 @@ SELECT "title", "year", "language", "rating",
          ORDER BY "authors"."last_name" LIMIT 1) AS "author"
 FROM "books"
 LEFT JOIN "ratings" ON "ratings"."book_id" = "books"."id"
-WHERE "is_read" = TRUE,
+WHERE "is_read" = TRUE
 ORDER BY "title";
 
 -- To view all books that were borrowed
@@ -194,7 +194,7 @@ FROM "books"
 LEFT JOIN "ratings" ON "ratings"."book_id" = "books"."id"
 JOIN "books_on_borrow" ON "books_on_borrow"."book_id" = "books"."id"
 JOIN "borrows" ON "borrows"."id" = "books_on_borrow"."borrow_id"
-WHERE "borrowed" = TRUE,
+WHERE "borrowed" = TRUE
 ORDER BY "due_date";
 
 -- To view all books that were lent
@@ -209,7 +209,7 @@ FROM "books"
 LEFT JOIN "ratings" ON "ratings"."book_id" = "books"."id"
 JOIN "books_on_lend" ON "books_on_lend"."book_id" = "books"."id"
 JOIN "lends" ON "lends"."id" = "books_on_lend"."lend_id"
-WHERE "lent" = TRUE,
+WHERE "lent" = TRUE
 ORDER BY "lend_date";
 
 -- To view all books that were sold (soft deletion)
@@ -224,7 +224,7 @@ FROM "books"
 LEFT JOIN "ratings" ON "ratings"."book_id" = "books"."id"
 JOIN "books_in_transaction" ON "books_in_transaction"."book_id" = "books"."id"
 JOIN "transactions" ON "transactions"."id" = "books_in_transaction"."transaction_id"
-WHERE "sold" = TRUE,
+WHERE "sold" = TRUE
 ORDER BY "timestamp";
 
 -- TRIGGERS
