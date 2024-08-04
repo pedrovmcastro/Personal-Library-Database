@@ -24,16 +24,16 @@ VALUES
 ('Objetivo'),
 ('Ática');
 
--- finally we can add the books with the 2 foreign keys:
+-- finally we can add the books with the foreign key:
 
 -- BOOKS
 
-INSERT INTO "books" ("title", "language", "original_language", "year", "category", "genre", "location", "publisher_id")
+INSERT INTO "books" ("title", "language", "original_language", "year", "category", "genre", "rating", "location", "publisher_id")
 VALUES
-('Memórias Póstumas de Brás Cubas', 'portuguese', 'portuguese', '1881', 'brazilian literature', 'novel', 'shelf', 2),
-('Dom Casmurro', 'portuguese', 'portuguese', '1899', 'brazilian literature', 'novel', 'shelf', 1),
-('Iracema', 'portuguese', 'portuguese', '1865', 'brazilian literature', 'novel', 'shelf', 1),
-('Os Ratos', 'portuguese', 'portuguese', '1935', 'brazilain literature', 'novel', 'shelf', 2);
+('Memórias Póstumas de Brás Cubas', 'portuguese', 'portuguese', '1881', 'brazilian literature', 'novel', 5, 'shelf', 2),
+('Dom Casmurro', 'portuguese', 'portuguese', '1899', 'brazilian literature', 'novel', 4.8, 'shelf', 1),
+('Iracema', 'portuguese', 'portuguese', '1865', 'brazilian literature', 'novel', 3.9, 'shelf', 1),
+('Os Ratos', 'portuguese', 'portuguese', '1935', 'brazilain literature', 'novel', 3.5, 'shelf', 2);
 
 -- AUTHORED
 
@@ -55,15 +55,4 @@ VALUES
 -- In my case I have already read all the four books, so the update query is easy
 
 UPDATE "books" SET "is_read" = TRUE;
-
--- RATINGS
-
--- The user can add a review or just a rating to the books
-
-INSERT INTO "ratings" ("book_id", "rating")
-VALUES
-(1, 5),
-(2, 4.8),
-(3, 3.9),
-(4, 3.5);
 
