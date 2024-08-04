@@ -6,8 +6,8 @@ CREATE TABLE "authors" (
     "id" INTEGER,
     "first_name" TEXT NOT NULL,
     "last_name" TEXT NOT NULL,
-    "nationality" TEXT DEFAULT NULL,
-    "date_of_birth" DATE DEFAULT NULL,
+    "nationality" TEXT,
+    "date_of_birth" DATE,
     PRIMARY KEY("id")
 );
 
@@ -15,18 +15,18 @@ CREATE TABLE "translators" (
     "id" INTEGER,
     "first_name" TEXT NOT NULL,
     "last_name" TEXT NOT NULL,
-    "nationality" TEXT DEFAULT NULL,
-    "date_of_birth" DATE DEFAULT NULL,
+    "nationality" TEXT,
+    "date_of_birth" DATE,
     PRIMARY KEY("id")
 );
 
 CREATE TABLE "publishers" (
     "id" INTEGER,
     "name" TEXT NOT NULL,
-    "founded_year" INTEGER DEFAULT NULL,
-    "phone_number" TEXT DEFAULT NULL,
-    "email" TEXT DEFAULT NULL,
-    "website" TEXT DEFAULT NULL,
+    "founded_year" INTEGER,
+    "phone_number" TEXT,
+    "email" TEXT,
+    "website" TEXT,
     PRIMARY KEY("id")
 );
 
@@ -35,19 +35,19 @@ CREATE TABLE "books" (
     "title" TEXT NOT NULL,
     "language" TEXT NOT NULL,
     "original_language" TEXT NOT NULL,
-    "year" INTEGER DEFAULT NULL,
-    "edition" INTEGER DEFAULT NULL,
-    "edition_year" INTEGER DEFAULT NULL,
+    "year" INTEGER,
+    "edition" INTEGER,
+    "edition_year" INTEGER,
     "category" TEXT NOT NULL,
     "genre" TEXT NOT NULL,
-    "rating" NUMERIC CHECK("rating" BETWEEN 0 AND 5) DEFAULT NULL,
-    "location" TEXT DEFAULT NULL, -- shelf, kindle, etc...
+    "rating" NUMERIC CHECK("rating" BETWEEN 0 AND 5),
+    "location" TEXT, -- shelf, kindle, etc...
     "is_read" BOOLEAN DEFAULT FALSE,
     "sold" BOOLEAN DEFAULT FALSE,
     "lent" BOOLEAN DEFAULT FALSE,
     "borrowed" BOOLEAN DEFAULT FALSE,
-    "translator_id" INTEGER DEFAULT NULL,
-    "publisher_id" INTEGER DEFAULT NULL,
+    "translator_id" INTEGER,
+    "publisher_id" INTEGER,
     FOREIGN KEY("translator_id") REFERENCES "translators"("id"),
     FOREIGN KEY("publisher_id") REFERENCES "publishers"("id"),
     PRIMARY KEY("id")
@@ -69,7 +69,7 @@ CREATE TABLE "transactions" (
     "timestamp" DATETIME DEFAULT CURRENT_TIMESTAMP,
     "entity_type" TEXT NOT NULL CHECK("entity_type" IN ('person', 'store')),
     "entity_name" TEXT NOT NULL,
-    "contact" TEXT DEFAULT NULL, -- phone number or email
+    "contact" TEXT, -- phone number or email
     PRIMARY KEY("id")
 );
 
@@ -93,8 +93,8 @@ CREATE TABLE "lends" (
 CREATE TABLE "books_on_lend" (
     "lend_id" INTEGER,
     "book_id" INTEGER,
-    "due_date" DATE DEFAULT NULL, -- Each book can have its own due and return date.
-    "return_date" DATE DEFAULT NULL,
+    "due_date" DATE, -- Each book can have its own due and return date.
+    "return_date" DATE,
     FOREIGN KEY ("lend_id") REFERENCES "lends"("id"),
     FOREIGN KEY ("book_id") REFERENCES "books"("id"),
     PRIMARY KEY ("lend_id", "book_id")
@@ -105,10 +105,10 @@ CREATE TABLE "borrows" (
     "entity_type" TEXT NOT NULL CHECK("entity_type" IN ('person', 'library')),
     "entity_name" TEXT NOT NULL,
     "borrow_date" DATE DEFAULT CURRENT_DATE,
-    "due_date" DATE DEFAULT NULL, -- It can be null because with people you generally don't have a due date.
+    "due_date" DATE, -- It can be null because with people you generally don't have a due date.
+    "return_date" DATE,
     "fine_per_day" NUMERIC CHECK("fine_per_day" >= 0 AND "fine_per_day" = ROUND("fine_per_day", 2)) DEFAULT 0,
     "total_fine" NUMERIC CHECK("total_fine" >= 0 AND "total_fine" = ROUND("total_fine", 2)) DEFAULT 0,
-    "return_date" DATE DEFAULT NULL,
     PRIMARY KEY("id")
 );
 
