@@ -13,7 +13,7 @@ VALUES
 ('Dyonelio', 'Machado', 'brazilian');
 
 
--- we don't have translators in this books
+-- we don't have translators in these books
 
 -- PUBLISHERS
 
