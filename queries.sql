@@ -30,10 +30,10 @@ VALUES
 
 INSERT INTO "books" ("title", "language", "original_language", "year", "category", "genre", "rating", "location", "publisher_id")
 VALUES
-('Memórias Póstumas de Brás Cubas', 'portuguese', 'portuguese', '1881', 'brazilian literature', 'novel', 5, 'shelf', 2),
-('Dom Casmurro', 'portuguese', 'portuguese', '1899', 'brazilian literature', 'novel', 4.8, 'shelf', 1),
-('Iracema', 'portuguese', 'portuguese', '1865', 'brazilian literature', 'novel', 3.9, 'shelf', 1),
-('Os Ratos', 'portuguese', 'portuguese', '1935', 'brazilain literature', 'novel', 3.5, 'shelf', 2);
+('Memórias Póstumas de Brás Cubas', 'portuguese', 'portuguese', 1881, 'brazilian literature', 'novel', 5, 'shelf', 2),
+('Dom Casmurro', 'portuguese', 'portuguese', 1899, 'brazilian literature', 'novel', 4.8, 'shelf', 1),
+('Iracema', 'portuguese', 'portuguese', 1865, 'brazilian literature', 'novel', 3.9, 'shelf', 1),
+('Os Ratos', 'portuguese', 'portuguese', 1935, 'brazilain literature', 'novel', 3.5, 'shelf', 2);
 
 -- AUTHORED
 
@@ -77,4 +77,48 @@ INSERT INTO "books_on_lend" ("lend_id", "book_id")
 VALUES
 (2, 1),
 (2, 2); -- The user lends at same time the books "Memórias Póstumas" and "Dom Casmurro" to Mary
+
+-- When the borrower returns the book, update books_on_lend.return_date, and books.lent will automatically be set to 0
+
+UPDATE "books_on_lend" SET "return_date" = CURRENT_DATE
+WHERE "book_id" = 1; -- So, Mary returned "Memórias Póstumas"
+
+-- TRANSACTIONS
+
+-- If the user buys a new book he can update both the books table and the transactions table
+-- For instance, the user bought the book "O Cortiço"
+
+INSERT INTO "authors"("first_name", "last_name", "nationality")
+VALUES
+('Aluísio', 'Azevedo', 'brazilian');
+
+INSERT INTO "books" ("title", "language", "original_language", "year", "category", "genre", "location", "publisher_id")
+VALUES
+('O Cortiço', 'portuguese', 'portuguese', 1890, 'brazilian literature', 'novel', 'shelf', 1);
+
+INSERT INTO "authored" ("author_id", "book_id")
+VALUES
+(4, 5);
+
+INSERT INTO "transactions" ("type", "value", "entity_type", "entity_name")
+VALUES
+('purchase', 15, 'store', 'Amazon');
+
+INSERT INTO "books_in_transaction" ("transaction_id", "book_id")
+VALUES
+(1, 5);
+
+-- The user can sell books also
+-- For instance, the user sold to a friend "Camila" his book "Iracema"
+
+INSERT INTO "transactions" ("type", "value", "entity_type", "entity_name")
+VALUES
+('sale', 10, 'person', 'Camila');
+
+INSERT INTO "books_in_transaction" ("transaction_id", "book_id")
+VALUES
+(2, 3);
+
+-- In this database we chose not to delete the books when they are sold, and use a soft deletion marking them as "sold"
+
 
