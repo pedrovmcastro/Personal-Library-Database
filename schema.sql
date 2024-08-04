@@ -95,6 +95,8 @@ CREATE TABLE "lends" (
 CREATE TABLE "books_on_lend" (
     "lend_id" INTEGER,
     "book_id" INTEGER,
+    "due_date" DATE DEFAULT NULL, -- Each book can have its own due and return date.
+    "return_date" DATE DEFAULT NULL,
     FOREIGN KEY ("lend_id") REFERENCES "lends"("id"),
     FOREIGN KEY ("book_id") REFERENCES "books"("id"),
     PRIMARY KEY ("lend_id", "book_id")
