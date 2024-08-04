@@ -85,8 +85,6 @@ CREATE TABLE "books_in_transaction" (
 CREATE TABLE "lends" (
     "id" INTEGER,
     "lend_date" DATE NOT NULL DEFAULT CURRENT_DATE,
-    "due_date" DATE DEFAULT NULL,
-    "return_date" DATE DEFAULT NULL,
     "borrower_name" TEXT NOT NULL,
     PRIMARY KEY("id")
 );
@@ -253,21 +251,17 @@ FOR EACH ROW
 BEGIN
     UPDATE "books"
     SET "lent" = TRUE
-    WHERE "id" = NEW."book_id"
+    WHERE "id" = NEW."book_id";
 END;
 
 -- Trigger to update books.lent to FALSE when a lent book is returned to the user
 CREATE TRIGGER "lend_returned"
-AFTER UPDATE OF "return_date" ON "lends"
+AFTER UPDATE OF "return_date" ON "books_on_lend"
 FOR EACH ROW
 BEGIN
     UPDATE "books"
     SET "lent" = FALSE
-    WHERE "id" IN (
-        SELECT "book_id"
-        FROM "books_on_lend"
-        WHERE "lend_id" = NEW."id"
-    );
+    WHERE "id" = NEW."book_id";
 END;
     
 -- Trigger to update books.borrowed to TRUE when a new borrow is inserted
