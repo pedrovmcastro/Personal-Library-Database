@@ -218,8 +218,8 @@ AFTER INSERT ON "books_in_transaction"
 FOR EACH ROW
 WHEN (SELECT "type" FROM "transactions" WHERE "id" = NEW."transaction_id") = 'purchase'
 BEGIN
-    UPDATE "books", "location" = 'shelf'
-    SET "sold" = FALSE
+    UPDATE "books"
+    SET "sold" = FALSE, "location" = 'shelf'
     WHERE "id" = NEW."book_id";
 END;
 
