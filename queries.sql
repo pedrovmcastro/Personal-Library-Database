@@ -56,3 +56,25 @@ VALUES
 
 UPDATE "books" SET "is_read" = TRUE;
 
+-- LENDS
+
+-- If the user, for instance, wants to lend a book to his friend - let's call him Jake -, then it will be necessary insert rows in the tables "lends" and "books_on_lend"
+INSERT INTO "lends" ("borrower_name")
+VALUES
+("Jake")
+
+INSERT INTO "books_on_lend" ("lend_id", "book_id")
+VALUES
+(1, 4) -- The user lends the book "Iracema" to Jake
+
+-- The books_on_lend is an association table because the user could lend more than one book
+
+INSERT INTO "lends"("borrower_name")
+VALUES
+("Mary")
+
+INSERT INTO "books_on_lend" ("lend_id", "book_id")
+VALUES
+(2, 1)
+(2, 2) -- The user lends at same time the books "Memórias Póstumas" and "Dom Casmurro" to Mary
+
