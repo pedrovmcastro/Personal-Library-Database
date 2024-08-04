@@ -124,9 +124,9 @@ CREATE TABLE "books_on_borrow" (
 -- VIEWS
 
 -- To view all books in the library
-CREATE VIEW "all_books" AS
+CREATE VIEW "available_books" AS
 SELECT 
-    "title", "year",
+    "id", "title", "year",
     (SELECT "first_name" || ' ' || "last_name"
     FROM "authors"
     JOIN "authored" ON "authored"."author_id" = "authors"."id"
@@ -139,50 +139,22 @@ ORDER BY "location", "author", "year";
 
 -- To view all books on the shelf
 CREATE VIEW "books_on_shelf" AS
-SELECT 
-    "title", "year",
-    (SELECT "first_name" || ' ' || "last_name"
-    FROM "authors"
-    JOIN "authored" ON "authored"."author_id" = "authors"."id"
-    WHERE "authored"."book_id" = "books"."id"
-    ORDER BY "authors"."last_name" LIMIT 1) AS "author",
-    "language", "rating", "location"       
-FROM "books"
-WHERE "location" = 'shelf'
-ORDER BY "author", "year";
+SELECT * FROM "available_books" WHERE "location" = 'shelf';
 
 -- To view all books in the kindle
 CREATE VIEW "books_on_kindle" AS
-SELECT 
-    "title", "year",
-    (SELECT "first_name" || ' ' || "last_name"
-    FROM "authors"
-    JOIN "authored" ON "authored"."author_id" = "authors"."id"
-    WHERE "authored"."book_id" = "books"."id"
-    ORDER BY "authors"."last_name" LIMIT 1) AS "author",
-    "language", "rating", "location"       
-FROM "books"
-WHERE "location" = 'kindle'
-ORDER BY "author", "year";
+SELECT * FROM "available_books" WHERE "location" = 'kindle';
 
 -- To view all books that have already been read
 CREATE VIEW "been_read" AS
-SELECT 
-    "title", "year",
-    (SELECT "first_name" || ' ' || "last_name"
-    FROM "authors"
-    JOIN "authored" ON "authored"."author_id" = "authors"."id"
-    WHERE "authored"."book_id" = "books"."id"
-    ORDER BY "authors"."last_name" LIMIT 1) AS "author",
-    "language", "rating", "location"       
-FROM "books"
-WHERE "is_read" = TRUE
-ORDER BY "location", "author";
+SELECT * FROM "available_books" 
+JOIN "books" ON "books"."id" = "available_books"."id"
+WHERE "is_read" = TRUE;
 
 -- To view all books that were borrowed
 CREATE VIEW "borrowed_books" AS
 SELECT 
-    "title", "year",
+    "id","title", "year",
     (SELECT "first_name" || ' ' || "last_name"
     FROM "authors"
     JOIN "authored" ON "authored"."author_id" = "authors"."id"
