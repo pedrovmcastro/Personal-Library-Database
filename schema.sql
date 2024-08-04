@@ -32,7 +32,7 @@ CREATE TABLE "publishers" (
 
 CREATE TABLE "ratings" (
     "id" INTEGER,
-    "book_id"
+    "book_id" INTEGER NOT NULL,
     "rating" NUMERIC NOT NULL CHECK("rating" BETWEEN 0 AND 5),
     "review" TEXT,
     "timestamp" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
