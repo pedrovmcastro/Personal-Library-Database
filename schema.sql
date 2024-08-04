@@ -132,7 +132,7 @@ SELECT
     JOIN "authored" ON "authored"."author_id" = "authors"."id"
     WHERE "authored"."book_id" = "books"."id"
     ORDER BY "authors"."last_name" LIMIT 1) AS "author",
-    "language", "rating", "location"       
+    "language", "rating", "location", "category", "genre"       
 FROM "books"
 WHERE "location" = 'shelf' OR "location" = 'kindle'
 ORDER BY "location", "author", "year";
@@ -160,7 +160,7 @@ SELECT
     JOIN "authored" ON "authored"."author_id" = "authors"."id"
     WHERE "authored"."book_id" = "books"."id"
     ORDER BY "authors"."last_name" LIMIT 1) AS "author",
-    "language", "rating", "borrow_id", "entity_name" AS "lender", "borrow_date", "due_date", "total_fine"   
+    "language", "borrow_id", "entity_name" AS "lender", "borrow_date", "due_date", "total_fine"   
 FROM "books"
 JOIN "books_on_borrow" ON "books_on_borrow"."book_id" = "books"."id"
 JOIN "borrows" ON "borrows"."id" = "books_on_borrow"."borrow_id"
@@ -170,13 +170,13 @@ ORDER BY "due_date", "borrow_date";
 -- To view all books that were lent
 CREATE VIEW "lent_books" AS
 SELECT 
-    "title", "year",
+    "id", "title", "year",
     (SELECT "first_name" || ' ' || "last_name"
     FROM "authors"
     JOIN "authored" ON "authored"."author_id" = "authors"."id"
     WHERE "authored"."book_id" = "books"."id"
     ORDER BY "authors"."last_name" LIMIT 1) AS "author",
-    "language", "rating", "lend_id", "borrower_name" AS "borrower", "lend_date", "due_date"      
+    "language", "lend_id", "borrower_name" AS "borrower", "lend_date", "due_date"      
 FROM "books"
 JOIN "books_on_lend" ON "books_on_lend"."book_id" = "books"."id"
 JOIN "lends" ON "lends"."id" = "books_on_lend"."lend_id"
@@ -186,13 +186,13 @@ ORDER BY "due_date", "lend_date";
 -- To view all books that were sold (soft deletion)
 CREATE VIEW "sold_books" AS
 SELECT 
-    "title", "year",
+    "id", "title", "year",
     (SELECT "first_name" || ' ' || "last_name"
     FROM "authors"
     JOIN "authored" ON "authored"."author_id" = "authors"."id"
     WHERE "authored"."book_id" = "books"."id"
     ORDER BY "authors"."last_name" LIMIT 1) AS "author",
-    "language", "rating", "transaction_id", "entity_name" AS "buyer", "value", "timestamp"   
+    "language", "transaction_id", "entity_name" AS "buyer", "value", "timestamp"   
 FROM "books"
 JOIN "books_in_transaction" ON "books_in_transaction"."book_id" = "books"."id"
 JOIN "transactions" ON "transactions"."id" = "books_in_transaction"."transaction_id"
