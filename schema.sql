@@ -125,87 +125,102 @@ CREATE TABLE "books_on_borrow" (
 
 -- To view all books in the library
 CREATE VIEW "all_books" AS
-SELECT "title", "year", "language", "location", "rating",
-        (SELECT "first_name" || ' ' || "last_name"
-         FROM "authors"
-         JOIN "authored" ON "authored"."author_id" = "authorS"."id"
-         WHERE "authored"."book_id" = "books"."id"
-         ORDER BY "authors"."last_name" LIMIT 1) AS "author"
+SELECT 
+    "title", "year",
+    (SELECT "first_name" || ' ' || "last_name"
+    FROM "authors"
+    JOIN "authored" ON "authored"."author_id" = "authors"."id"
+    WHERE "authored"."book_id" = "books"."id"
+    ORDER BY "authors"."last_name" LIMIT 1) AS "author",
+    "language", "rating", "location"       
 FROM "books"
-ORDER BY "location", "title";
+WHERE "location" = 'shelf' OR "location" = 'kindle'
+ORDER BY "location", "author", "year";
 
 -- To view all books on the shelf
-CREATE VIEW "shelf" AS
-SELECT "title", "year", "language", "rating",
-        (SELECT "first_name" || ' ' || "last_name"
-         FROM "authors"
-         JOIN "authored" ON "authored"."author_id" = "authorS"."id"
-         WHERE "authored"."book_id" = "books"."id"
-         ORDER BY "authors"."last_name" LIMIT 1) AS "author" 
+CREATE VIEW "books_on_shelf" AS
+SELECT 
+    "title", "year",
+    (SELECT "first_name" || ' ' || "last_name"
+    FROM "authors"
+    JOIN "authored" ON "authored"."author_id" = "authors"."id"
+    WHERE "authored"."book_id" = "books"."id"
+    ORDER BY "authors"."last_name" LIMIT 1) AS "author",
+    "language", "rating", "location"       
 FROM "books"
 WHERE "location" = 'shelf'
-ORDER BY "title";
+ORDER BY "author", "year";
 
 -- To view all books in the kindle
-CREATE VIEW "kindle" AS
-SELECT "title", "year", "language", "rating",
-        (SELECT "first_name" || ' ' || "last_name"
-         FROM "authors"
-         JOIN "authored" ON "authored"."author_id" = "authors"."id"
-         WHERE "authored"."book_id" = "books"."id"
-         ORDER BY "authors"."last_name" LIMIT 1) AS "author"    
+CREATE VIEW "books_on_kindle" AS
+SELECT 
+    "title", "year",
+    (SELECT "first_name" || ' ' || "last_name"
+    FROM "authors"
+    JOIN "authored" ON "authored"."author_id" = "authors"."id"
+    WHERE "authored"."book_id" = "books"."id"
+    ORDER BY "authors"."last_name" LIMIT 1) AS "author",
+    "language", "rating", "location"       
 FROM "books"
 WHERE "location" = 'kindle'
-ORDER BY "title";
+ORDER BY "author", "year";
 
 -- To view all books that have already been read
 CREATE VIEW "been_read" AS
-SELECT "title", "year", "language", "rating",
-        (SELECT "first_name" || ' ' || "last_name"
-         FROM "authors"
-         JOIN "authored" ON "authored"."author_id" = "authors"."id"
-         WHERE "authored"."book_id" = "books"."id"
-         ORDER BY "authors"."last_name" LIMIT 1) AS "author"
+SELECT 
+    "title", "year",
+    (SELECT "first_name" || ' ' || "last_name"
+    FROM "authors"
+    JOIN "authored" ON "authored"."author_id" = "authors"."id"
+    WHERE "authored"."book_id" = "books"."id"
+    ORDER BY "authors"."last_name" LIMIT 1) AS "author",
+    "language", "rating", "location"       
 FROM "books"
 WHERE "is_read" = TRUE
-ORDER BY "title";
+ORDER BY "location", "author";
 
 -- To view all books that were borrowed
 CREATE VIEW "borrowed_books" AS
-SELECT "title", "year", "language" , "rating", "entity_name" AS "lender", "borrow_date", "due_date", "total_fine",
-        (SELECT "first_name" || ' ' || "last_name"
-         FROM "authors"
-         JOIN "authored" ON "authored"."author_id" = "authors"."id"
-         WHERE "authored"."book_id" = "books"."id"
-         ORDER BY "authors"."last_name" LIMIT 1) AS "author"
+SELECT 
+    "title", "year",
+    (SELECT "first_name" || ' ' || "last_name"
+    FROM "authors"
+    JOIN "authored" ON "authored"."author_id" = "authors"."id"
+    WHERE "authored"."book_id" = "books"."id"
+    ORDER BY "authors"."last_name" LIMIT 1) AS "author",
+    "language", "rating", "borrow_id", "entity_name" AS "lender", "borrow_date", "due_date", "total_fine"   
 FROM "books"
 JOIN "books_on_borrow" ON "books_on_borrow"."book_id" = "books"."id"
 JOIN "borrows" ON "borrows"."id" = "books_on_borrow"."borrow_id"
 WHERE "borrowed" = TRUE
-ORDER BY "due_date";
+ORDER BY "due_date", "borrow_date";
 
 -- To view all books that were lent
 CREATE VIEW "lent_books" AS
-SELECT "title", "year", "language", "rating", "borrower_name" AS "borrower", "lend_date",
-        (SELECT "first_name" || ' ' || "last_name"
-         FROM "authors"
-         JOIN "authored" ON "authored"."author_id" = "authors"."id"
-         WHERE "authored"."book_id" = "books"."id"
-         ORDER BY "authors"."last_name" LIMIT 1) AS "author"
+SELECT 
+    "title", "year",
+    (SELECT "first_name" || ' ' || "last_name"
+    FROM "authors"
+    JOIN "authored" ON "authored"."author_id" = "authors"."id"
+    WHERE "authored"."book_id" = "books"."id"
+    ORDER BY "authors"."last_name" LIMIT 1) AS "author",
+    "language", "rating", "lend_id", "borrower_name" AS "borrower", "lend_date", "due_date"      
 FROM "books"
 JOIN "books_on_lend" ON "books_on_lend"."book_id" = "books"."id"
 JOIN "lends" ON "lends"."id" = "books_on_lend"."lend_id"
 WHERE "lent" = TRUE
-ORDER BY "lend_date";
+ORDER BY "due_date", "lend_date";
 
 -- To view all books that were sold (soft deletion)
 CREATE VIEW "sold_books" AS
-SELECT "title", "year", "language", "rating", "entity_name" AS "buyer", "value", "timestamp",
-        (SELECT "first_name" || ' ' || "last_name"
-         FROM "authors"
-         JOIN "authored" ON "authored"."author_id" = "authors"."id"
-         WHERE "authored"."book_id" = "books"."id"
-         ORDER BY "authors"."last_name" LIMIT 1) AS "author"    
+SELECT 
+    "title", "year",
+    (SELECT "first_name" || ' ' || "last_name"
+    FROM "authors"
+    JOIN "authored" ON "authored"."author_id" = "authors"."id"
+    WHERE "authored"."book_id" = "books"."id"
+    ORDER BY "authors"."last_name" LIMIT 1) AS "author",
+    "language", "rating", "transaction_id", "entity_name" AS "buyer", "value", "timestamp"   
 FROM "books"
 JOIN "books_in_transaction" ON "books_in_transaction"."book_id" = "books"."id"
 JOIN "transactions" ON "transactions"."id" = "books_in_transaction"."transaction_id"
@@ -216,32 +231,24 @@ ORDER BY "timestamp";
 
 -- Trigger to update books.sold to TRUE when a new sale transaction is inserted
 CREATE TRIGGER "sold"
-AFTER INSERT ON "transactions"
+AFTER INSERT ON "books_in_transaction"
 FOR EACH ROW
-WHEN NEW."type" = 'sale'
+WHEN (SELECT "type" FROM "transactions" WHERE "id" = NEW."transaction_id") = 'sale'
 BEGIN
     UPDATE "books"
-    SET "sold" = TRUE
-    WHERE "id" IN (
-        SELECT "book_id"
-        FROM "books_in_transaction"
-        WHERE "transaction_id" = NEW."id"
-    );
+    SET "sold" = TRUE, "location" = 'sold'
+    WHERE "id" = NEW."book_id";
 END;
 
 -- Trigger to update books.sold to FALSE when a new purchase transaction is inserted for a book that was already sold
 CREATE TRIGGER "bought"
-AFTER INSERT ON "transactions"
+AFTER INSERT ON "books_in_transaction"
 FOR EACH ROW
-WHEN NEW."type" = 'purchase' 
+WHEN (SELECT "type" FROM "transactions" WHERE "id" = NEW."transaction_id") = 'purchase'
 BEGIN
-    UPDATE "books"
+    UPDATE "books", "location" = 'shelf'
     SET "sold" = FALSE
-    WHERE "id" IN (
-        SELECT "book_id"
-        FROM "books_in_transaction"
-        WHERE "transaction_id" = NEW."id" 
-        ) AND "sold" = TRUE;
+    WHERE "id" = NEW."book_id";
 END;
 
 -- Trigger to update books.lent to TRUE when a new lend is inserted
@@ -250,7 +257,7 @@ AFTER INSERT ON "books_on_lend"
 FOR EACH ROW
 BEGIN
     UPDATE "books"
-    SET "lent" = TRUE
+    SET "lent" = TRUE, "location" = 'lent'
     WHERE "id" = NEW."book_id";
 END;
 
@@ -260,7 +267,7 @@ AFTER UPDATE OF "return_date" ON "books_on_lend"
 FOR EACH ROW
 BEGIN
     UPDATE "books"
-    SET "lent" = FALSE
+    SET "lent" = FALSE, "location" = 'shelf'
     WHERE "id" = NEW."book_id";
 END;
     
