@@ -32,9 +32,11 @@ CREATE TABLE "publishers" (
 
 CREATE TABLE "ratings" (
     "id" INTEGER,
+    "book_id"
     "rating" NUMERIC NOT NULL CHECK("rating" BETWEEN 0 AND 5),
     "review" TEXT,
     "timestamp" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY("book_id") REFERENCES "books"("id"),
     PRIMARY KEY("id")
 );
 
@@ -55,10 +57,8 @@ CREATE TABLE "books" (
     "borrowed" BOOLEAN DEFAULT FALSE,
     "translator_id" INTEGER,
     "publisher_id" INTEGER,
-    "rating_id" INTEGER,
     FOREIGN KEY("translator_id") REFERENCES "translators"("id"),
     FOREIGN KEY("publisher_id") REFERENCES "publishers"("id"),
-    FOREIGN KEY("rating_id") REFERENCES "ratings"("id"),
     PRIMARY KEY("id")
 );
 
@@ -295,7 +295,7 @@ END;
 
 -- To optmize this database is created indexes, to order the data allowing binary search; 
 -- much faster than linear search in unordered data.
--- The queries, the views and the triggers will bring the answers faster.
+-- The queries will bring the answers faster.
 
 CREATE INDEX "books_index" ON "books"("id");
 
@@ -308,3 +308,4 @@ CREATE INDEX "authors_index" ON "authors"("id");
 CREATE INDEX "authors_last_name_index" ON "authors"("last_name");
 
 CREATE INDEX "transactions_index" ON "transactions"("id");
+
