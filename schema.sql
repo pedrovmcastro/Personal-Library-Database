@@ -1,5 +1,3 @@
--- In this SQL file, write (and comment!) the schema of your database, including the CREATE TABLE, CREATE INDEX, CREATE VIEW, etc. statements that compose it
-
 -- TABLES 
 
 CREATE TABLE "authors" (
@@ -141,7 +139,7 @@ ORDER BY "location", "author", "year";
 CREATE VIEW "books_on_shelf" AS
 SELECT * FROM "available_books" WHERE "location" = 'shelf';
 
--- To view all books in the kindle
+-- To view all books on the kindle
 CREATE VIEW "books_on_kindle" AS
 SELECT * FROM "available_books" WHERE "location" = 'kindle';
 
@@ -151,7 +149,7 @@ SELECT * FROM "available_books"
 JOIN "books" ON "books"."id" = "available_books"."id"
 WHERE "is_read" = TRUE;
 
--- To view all books that were sold (soft deletion)
+-- To view all books that have been sold (soft deletion)
 CREATE VIEW "sold_books" AS
 SELECT 
     "id", "title", "year",
@@ -167,7 +165,7 @@ JOIN "transactions" ON "transactions"."id" = "books_in_transaction"."transaction
 WHERE "sold" = TRUE
 ORDER BY "timestamp";
 
--- To view all books that were lent
+-- To view all books that have been lent
 CREATE VIEW "lent_books" AS
 SELECT 
     "id", "title", "year",
@@ -183,7 +181,7 @@ JOIN "lends" ON "lends"."id" = "books_on_lend"."lend_id"
 WHERE "lent" = TRUE
 ORDER BY "due_date", "lend_date";
 
--- To view all books that were borrowed
+-- To view all books that have been borrowed
 CREATE VIEW "borrowed_books" AS
 SELECT 
     "id","title", "year",
@@ -199,6 +197,7 @@ JOIN "borrows" ON "borrows"."id" = "books_on_borrow"."borrow_id"
 WHERE "borrowed" = TRUE
 ORDER BY "due_date", "borrow_date";
 
+-- To view all books that have been borrowed and not yet returned
 CREATE VIEW "current_borrowed_books" AS
 SELECT * FROM "borrowed_books" WHERE "return_date" IS NULL;
 
@@ -272,9 +271,8 @@ END;
 
 -- INDEXES
 
--- To optmize this database is created indexes, to order the data allowing binary search; 
--- much faster than linear search in unordered data.
--- The queries will bring the answers faster.
+-- To optimize this database, indexes are created to order the data, allowing for binary search, 
+-- which is much faster than linear search in unordered data. The queries will then bring the answers faster
 
 CREATE INDEX "books_index" ON "books"("id");
 

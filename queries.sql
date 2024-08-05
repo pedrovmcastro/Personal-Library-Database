@@ -1,10 +1,10 @@
--- Adding 4 books without translation in the library:
--- So, will need Author and Publisher
+-- Adding some books without translation in the library:
+-- Author and Publisher information will be needed.
 
 -- AUTHORS 
 
--- first name, last_name, nationality, date_of_birth are the columns of this table
--- we don't know in the moment the date_of_birth, so, we don't will insert anything in this column
+-- The columns of this table are: first_name, last_name, nationality and date_of_birth.
+-- We don't need the date_of_birth at the moment, so we will leave this column empty.
 
 INSERT INTO "authors"("first_name", "last_name", "nationality")
 VALUES
@@ -12,12 +12,9 @@ VALUES
 ('José de', 'Alencar', 'brazilian'),
 ('Dyonelio', 'Machado', 'brazilian');
 
-
--- we don't have translators in these books
-
 -- PUBLISHERS
 
--- We'll ignore "phone_number", "email", "website" and "founded_yer", just the "name" for now
+-- We'll ignore "phone_number", "email", "website" and "founded_yer", just the "name" for now.
 
 INSERT INTO "publishers"("name")
 VALUES
@@ -38,8 +35,8 @@ VALUES
 -- AUTHORED
 
 -- Machado de Assis is the author of "Memórias Póstumas" and "Dom Casmurro". "José de Alencar" wrote "Iracema",
--- and "Dyonelio Machado" wrote "Os Ratos"
--- We need to have this association table because we can have books with more than one author
+-- and "Dyonelio Machado" wrote "Os Ratos".
+-- We need to have this association table because we can have books with more than one author.
 
 INSERT INTO "authored" ("author_id", "book_id")
 VALUES
@@ -50,24 +47,25 @@ VALUES
 
 -- UPDATE DATABASE 
 
--- The user might add a book that he already read, so he can update the book just after added it
+-- The user can update the row corresponding to one of the books they have read, marking it as 'is_read'.
 
--- In my case I have already read all the four books, so the update query is easy
-
-UPDATE "books" SET "is_read" = TRUE;
+UPDATE "books" SET "is_read" = TRUE
+WHERE "title" = 'Dom Casmurro';
 
 -- LENDS
 
--- If the user, for instance, wants to lend a book to his friend - let's call him Jake -, then it will be necessary insert rows in the tables "lends" and "books_on_lend"
+-- If the user, for instance, wants to lend a book to his friend - let's call him Jake -, 
+-- it will be necessary insert rows in the 'lends' and 'books_on_lend' tables.
+
 INSERT INTO "lends" ("borrower_name")
 VALUES
 ('Jake');
 
 INSERT INTO "books_on_lend" ("lend_id", "book_id")
 VALUES
-(1, 4); -- The user lends the book "Iracema" to Jake
+(1, 4); -- The user lends the book "Os Ratos" to Jake.
 
--- The books_on_lend is an association table because the user could lend more than one book
+-- The 'books_on_lend' table is an association table because the user can lend more than one book at the same time.
 
 INSERT INTO "lends"("borrower_name")
 VALUES
@@ -76,17 +74,18 @@ VALUES
 INSERT INTO "books_on_lend" ("lend_id", "book_id")
 VALUES
 (2, 1),
-(2, 2); -- The user lends at same time the books "Memórias Póstumas" and "Dom Casmurro" to Mary
+(2, 2); -- The user lends the books "Memórias Póstumas" and "Dom Casmurro" to Mary at the same time.
 
--- When the borrower returns the book, update books_on_lend.return_date, and books.lent will automatically be set to 0
+-- When the borrower returns the book, it will be necessary to update the 'return_date' in the 'books_on_lend' table.
+-- Then the 'lent' column in the 'books' table will automatically be set to 0 due to the triggers.
 
 UPDATE "books_on_lend" SET "return_date" = CURRENT_DATE
-WHERE "book_id" = 1; -- So, Mary returned "Memórias Póstumas"
+WHERE "book_id" = 1; -- So, Mary returned 'Memórias Póstumas' but kept 'Dom Casmurro.
 
 -- TRANSACTIONS
 
--- If the user buys a new book he can update both the books table and the transactions table
--- For instance, the user bought the book "O Cortiço"
+-- If the user buys a new book, they can update both the 'books' table and the 'transactions' table.
+-- For instance, the user bought the book 'O Cortiço'.
 
 INSERT INTO "authors"("first_name", "last_name", "nationality")
 VALUES
@@ -108,8 +107,8 @@ INSERT INTO "books_in_transaction" ("transaction_id", "book_id")
 VALUES
 (1, 5);
 
--- The user can sell books also
--- For instance, the user sold to a friend "Camila" his book "Iracema"
+-- The user can also sell books.
+-- For instance, the user sold their book 'Iracema' to their friend Camila.
 
 INSERT INTO "transactions" ("type", "value", "entity_type", "entity_name")
 VALUES
@@ -132,7 +131,7 @@ VALUES
 
 INSERT INTO "books" ("title", "language", "original_language", "year", "category", "genre", "rating", "location", "publisher_id", "is_read")
 VALUES
-('Triste Fim de Policarpo Quaresma', 'portuguese', 'portuguese', 1915, 'brazilian literature', 'novel', 3.3, "shelf", 1, 1);
+('Triste Fim de Policarpo Quaresma', 'portuguese', 'portuguese', 1915, 'brazilian literature', 'novel', 3.3, 'shelf', 1, 1);
 
 INSERT INTO "authored" ("author_id", "book_id")
 VALUES
@@ -146,4 +145,5 @@ INSERT INTO "books_on_borrow" ("borrow_id", "book_id", "due_date")
 VALUES
 (1, 6, '2024-08-14');
 
--- Due to the use of triggers, the user does not need to worry about updating the status of books, such as "sold", "lent" and "borrowed".
+-- Due to the use of triggers, the user does not need to worry about updating the status of books,
+-- such as "sold", "lent" and "borrowed".
