@@ -119,6 +119,31 @@ INSERT INTO "books_in_transaction" ("transaction_id", "book_id")
 VALUES
 (2, 3);
 
--- In this database we chose not to delete the books when they are sold, and use a soft deletion marking them as "sold"
+-- In this database we chose not to delete the books when they are sold, and use a soft deletion marking them as "sold" = 1
+
+-- BORROWS
+
+-- If the user borrows a book from another library or person, the initial steps are the same
+-- for example, let's say that the user has borrowed the book "Policarpo Quaresma" from the Municipal Library.
+
+INSERT INTO "authors" ("first_name", "last_name", "nationality")
+VALUES
+('Lima', 'Barreto', 'brazilian');
+
+INSERT INTO "books" ("title", "language", "original_language", "year", "category", "genre", "rating", "location", "publisher_id", "is_read")
+VALUES
+('Triste Fim de Policarpo Quaresma', 'portuguese', 'portuguese', 1915, 'brazilian literature', 'novel', 3.3, "shelf", 1, 1)
+
+INSERT INTO "authored" ("author_id", "book_id")
+VALUES
+(5, 6)
+
+INSERT INTO "borrows" ("entity_type", "entity_name", "fine_per_day")
+VALUES
+('library', 'Municipal Library', 2);
+
+INSERT INTO "books_on_borrow" ("borrow_id", "book_id", "due_date")
+VALUES
+(1, 6, '2024-08-14');
 
 
