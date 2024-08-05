@@ -1,7 +1,7 @@
 -- Adding some books without translation in the library:
 -- Author and Publisher information will be needed.
 
--- AUTHORS 
+-- add AUTHORS 
 
 -- The columns of this table are: first_name, last_name, nationality and date_of_birth.
 -- We don't need the date_of_birth at the moment, so we will leave this column empty.
@@ -12,7 +12,7 @@ VALUES
 ('José de', 'Alencar', 'brazilian'),
 ('Dyonelio', 'Machado', 'brazilian');
 
--- PUBLISHERS
+-- add PUBLISHERS
 
 -- We'll ignore "phone_number", "email", "website" and "founded_yer", just the "name" for now.
 
@@ -23,7 +23,7 @@ VALUES
 
 -- finally we can add the books with the foreign key:
 
--- BOOKS
+-- add BOOKS
 
 INSERT INTO "books" ("title", "language", "original_language", "year", "category", "genre", "rating", "location", "publisher_id")
 VALUES
@@ -52,7 +52,7 @@ VALUES
 UPDATE "books" SET "is_read" = TRUE
 WHERE "title" = 'Dom Casmurro';
 
--- LENDS
+-- add LENDS
 
 -- If the user, for instance, wants to lend a book to his friend - let's call him Jake -, 
 -- it will be necessary insert rows in the 'lends' and 'books_on_lend' tables.
@@ -82,7 +82,7 @@ VALUES
 UPDATE "books_on_lend" SET "return_date" = CURRENT_DATE
 WHERE "book_id" = 1; -- So, Mary returned 'Memórias Póstumas' but kept 'Dom Casmurro.
 
--- TRANSACTIONS
+-- add TRANSACTIONS
 
 -- If the user buys a new book, they can update both the 'books' table and the 'transactions' table.
 -- For instance, the user bought the book 'O Cortiço'.
@@ -120,7 +120,7 @@ VALUES
 
 -- In this database we chose not to delete the books when they are sold, and use a soft deletion marking them as "sold" = 1
 
--- BORROWS
+-- add BORROWS
 
 -- If the user borrows a book from another library or person, the initial steps are the same
 -- for example, let's say that the user has borrowed the book "Policarpo Quaresma" from the Municipal Library.
@@ -147,3 +147,38 @@ VALUES
 
 -- Due to the use of triggers, the user does not need to worry about updating the status of books,
 -- such as "sold", "lent" and "borrowed".
+
+-- SELECT 
+
+-- Some common queries that users might make can be simplified thanks to the Views.
+
+-- Search books that have been sold
+SELECT * FROM "sold_books";
+
+-- Search books that have been lent
+SELECT * FROM "lent_books";
+
+-- Search books that have been borrowed and haven't been returned yet
+SELECT * FROM "current_borrowed_books";
+
+-- Search books that are on the shelf
+SELECT * FROM "books_on_shelf";
+
+-- Search books that are on the kindle
+SELECT * FROM "books_on_kindle";
+
+-- Search books that have already been read
+SELECT * FROM "been_read";
+
+-- Search books by a specific author
+SELECT * FROM "books"
+JOIN "authored" ON "authored"."book_id" = "books"."id"
+JOIN "authors" ON "authored"."author_id" = "authors"."id"
+WHERE "authors"."last_name" = 'Machado';
+
+-- Check loans for a specific book
+SELECT "lends".*, "books"."title" 
+FROM "books_on_lend"
+JOIN "lends" ON "books_on_lend"."lend_id" = "lends"."id"
+JOIN "books" ON "books_on_lend"."book_id" = "books"."id"
+WHERE "books"."id" = 1;
