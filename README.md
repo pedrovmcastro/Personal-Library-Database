@@ -1,16 +1,20 @@
 # Design Document
 
-By YOUR NAME HERE
+By Pedro de Castro
 
 Video overview: <URL HERE>
 
 ## Scope
 
-In this section you should answer the following questions:
+The purpose of this database is to allow the user to manage a personal library in a simple and effective manner. Includes all the necessary entities to help the user manage their books, loans, and transactions. The database's scope is:
 
-* What is the purpose of your database?
-* Which people, places, things, etc. are you including in the scope of your database?
-* Which people, places, things, etc. are *outside* the scope of your database?
+* Books, including a wide range of information about them
+* Authors, including basic identifying information
+* Translators, including basic indentifying information
+* Book lendings, including the type of loan (lend or borrow), the people involved, the time at which the loan was made, when the book was returned, as well as fines in case of delay
+* Book transactions, including the type of transaction (purchase or sale), the name of people involved, the values, and the time at which the transaction was made
+
+Out of scope are elements like personal information of the people involved, libraries and bookstores.
 
 ## Functional Requirements
 
