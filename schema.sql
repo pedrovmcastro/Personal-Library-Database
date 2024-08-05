@@ -105,8 +105,6 @@ CREATE TABLE "borrows" (
     "entity_type" TEXT NOT NULL CHECK("entity_type" IN ('person', 'library')),
     "entity_name" TEXT NOT NULL,
     "borrow_date" DATE DEFAULT CURRENT_DATE,
-    "due_date" DATE, -- It can be null because with people you generally don't have a due date.
-    "return_date" DATE,
     "fine_per_day" NUMERIC CHECK("fine_per_day" >= 0 AND "fine_per_day" = ROUND("fine_per_day", 2)) DEFAULT 0,
     "total_fine" NUMERIC CHECK("total_fine" >= 0 AND "total_fine" = ROUND("total_fine", 2)) DEFAULT 0,
     PRIMARY KEY("id")
@@ -116,6 +114,8 @@ CREATE TABLE "borrows" (
 CREATE TABLE "books_on_borrow" (
     "borrow_id" INTEGER,
     "book_id" INTEGER,
+    "due_date" DATE, -- It can be null because with people you generally don't have a due date.
+    "return_date" DATE,
     FOREIGN KEY ("borrow_id") REFERENCES "borrows"("id"),
     FOREIGN KEY ("book_id") REFERENCES "books"("id"),
     PRIMARY KEY ("borrow_id", "book_id")
@@ -151,21 +151,21 @@ SELECT * FROM "available_books"
 JOIN "books" ON "books"."id" = "available_books"."id"
 WHERE "is_read" = TRUE;
 
--- To view all books that were borrowed
-CREATE VIEW "borrowed_books" AS
+-- To view all books that were sold (soft deletion)
+CREATE VIEW "sold_books" AS
 SELECT 
-    "id","title", "year",
+    "id", "title", "year",
     (SELECT "first_name" || ' ' || "last_name"
     FROM "authors"
     JOIN "authored" ON "authored"."author_id" = "authors"."id"
     WHERE "authored"."book_id" = "books"."id"
     ORDER BY "authors"."last_name" LIMIT 1) AS "author",
-    "language", "borrow_id", "entity_name" AS "lender", "borrow_date", "due_date", "total_fine"   
+    "language", "transaction_id", "entity_name" AS "buyer", "value", "timestamp"   
 FROM "books"
-JOIN "books_on_borrow" ON "books_on_borrow"."book_id" = "books"."id"
-JOIN "borrows" ON "borrows"."id" = "books_on_borrow"."borrow_id"
-WHERE "borrowed" = TRUE
-ORDER BY "due_date", "borrow_date";
+JOIN "books_in_transaction" ON "books_in_transaction"."book_id" = "books"."id"
+JOIN "transactions" ON "transactions"."id" = "books_in_transaction"."transaction_id"
+WHERE "sold" = TRUE
+ORDER BY "timestamp";
 
 -- To view all books that were lent
 CREATE VIEW "lent_books" AS
@@ -183,21 +183,24 @@ JOIN "lends" ON "lends"."id" = "books_on_lend"."lend_id"
 WHERE "lent" = TRUE
 ORDER BY "due_date", "lend_date";
 
--- To view all books that were sold (soft deletion)
-CREATE VIEW "sold_books" AS
+-- To view all books that were borrowed
+CREATE VIEW "borrowed_books" AS
 SELECT 
-    "id", "title", "year",
+    "id","title", "year",
     (SELECT "first_name" || ' ' || "last_name"
     FROM "authors"
     JOIN "authored" ON "authored"."author_id" = "authors"."id"
     WHERE "authored"."book_id" = "books"."id"
     ORDER BY "authors"."last_name" LIMIT 1) AS "author",
-    "language", "transaction_id", "entity_name" AS "buyer", "value", "timestamp"   
+    "language", "borrow_id", "entity_name" AS "lender", "borrow_date", "due_date", "return_date", "fine_per_day", "total_fine"   
 FROM "books"
-JOIN "books_in_transaction" ON "books_in_transaction"."book_id" = "books"."id"
-JOIN "transactions" ON "transactions"."id" = "books_in_transaction"."transaction_id"
-WHERE "sold" = TRUE
-ORDER BY "timestamp";
+JOIN "books_on_borrow" ON "books_on_borrow"."book_id" = "books"."id"
+JOIN "borrows" ON "borrows"."id" = "books_on_borrow"."borrow_id"
+WHERE "borrowed" = TRUE
+ORDER BY "due_date", "borrow_date";
+
+CREATE VIEW "current_borrowed_books" AS
+SELECT * FROM "borrowed_books" WHERE "return_date" IS NULL;
 
 -- TRIGGERS
 
@@ -245,16 +248,22 @@ END;
     
 -- Trigger to update books.borrowed to TRUE when a new borrow is inserted
 CREATE TRIGGER "borrowed"
-AFTER INSERT ON "borrows"
+AFTER INSERT ON "books_on_borrow"
 FOR EACH ROW
 BEGIN
     UPDATE "books"
-    SET "borrowed" = TRUE
-    WHERE "id" IN (
-        SELECT "book_id"
-        FROM "books_on_borrow"
-        WHERE "borrow"."id" = NEW."id"
-    );
+    SET "borrowed" = TRUE, "location" = 'shelf'
+    WHERE "id" = NEW."book_id";
+END;
+
+-- Trigger to update the location of books to 'returned' when they are returned
+CREATE TRIGGER "borrow_returned"
+AFTER UPDATE OF "return_date" ON "books_on_borrow"
+FOR EACH ROW
+BEGIN
+    UPDATE "books"
+    SET "location" = 'returned'
+    WHERE "id" = NEW."book_id";
 END;
 
 -- A QUESTÃO DA MULTA DA BIBLIOTECA PODE SER UMA FEATURE PARA A VERSÃO 1.1 E dai voce diz isso no design.md
