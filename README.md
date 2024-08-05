@@ -26,7 +26,7 @@ This database will support:
 * Triggers that automatically update the status of books when they go through a transaction or loan
 * Soft deletion: maintains a history of all books that have been sold and borrowed
 
-Beyond the scope is the fact that the total fine amount in case of delay is not updated automatically but needs to be updated manually
+This database does not support the automatic updating of the total fine amount in case of delay; it needs to be updated manually.
 
 ## Representation
 
