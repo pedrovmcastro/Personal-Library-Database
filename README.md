@@ -10,18 +10,23 @@ The purpose of this database is to allow the user to manage a personal library i
 
 * Books, including a wide range of information about them
 * Authors, including basic identifying information
-* Translators, including basic indentifying information
-* Book lendings, including the type of loan (lend or borrow), the people involved, the time at which the loan was made, when the book was returned, as well as fines in case of delay
+* Translators, including basic identifying information
+* Publishers, including basic identifying information
+* Book loans, including the type of loan (lend or borrow), the name of people involved, the time at which the loan was made, when the book was returned, as well as fines in case of delay
 * Book transactions, including the type of transaction (purchase or sale), the name of people involved, the values, and the time at which the transaction was made
 
 Out of scope are elements like personal information of the people involved, libraries and bookstores.
 
 ## Functional Requirements
 
-In this section you should answer the following questions:
+This database will support:
 
-* What should a user be able to do with your database?
-* What's beyond the scope of what a user should be able to do with your database?
+* CRUD operations for books, authors, translators, publishers, loans and transactions
+* Tracking the loans, including when and to whom each book was lent, when and from whom each book was borrowed, and allowing for a single loan with multiple books and with the possibility of having different due dates
+* Triggers that automatically update the status of books when they go through a transaction or loan
+* Soft deletion: maintains a history of all books that have been sold and borrowed
+
+Beyond the scope is the fact that the total fine amount in case of delay is not updated automatically but needs to be updated manually
 
 ## Representation
 
