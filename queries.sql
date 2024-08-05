@@ -132,11 +132,11 @@ VALUES
 
 INSERT INTO "books" ("title", "language", "original_language", "year", "category", "genre", "rating", "location", "publisher_id", "is_read")
 VALUES
-('Triste Fim de Policarpo Quaresma', 'portuguese', 'portuguese', 1915, 'brazilian literature', 'novel', 3.3, "shelf", 1, 1)
+('Triste Fim de Policarpo Quaresma', 'portuguese', 'portuguese', 1915, 'brazilian literature', 'novel', 3.3, "shelf", 1, 1);
 
 INSERT INTO "authored" ("author_id", "book_id")
 VALUES
-(5, 6)
+(5, 6);
 
 INSERT INTO "borrows" ("entity_type", "entity_name", "fine_per_day")
 VALUES
@@ -146,4 +146,4 @@ INSERT INTO "books_on_borrow" ("borrow_id", "book_id", "due_date")
 VALUES
 (1, 6, '2024-08-14');
 
-
+-- Due to the use of triggers, the user does not need to worry about updating the status of books, such as "sold", "lent" and "borrowed".
