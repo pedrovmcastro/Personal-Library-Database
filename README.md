@@ -168,6 +168,14 @@ The `books_on_borrow` table is an association table between `borrows` and `books
 
 ![ER Diagram](diagram.png)
 
+As detailed by the diagram:
+
+* A book is written by one or many authors. Likewise, an author can write one or many books.
+* A book can be translated by one and only one translator. Otherwise, a translator can translate one or many books.
+* A book can be published by one and only one publisher. Whereas, a publisher can publish one or many books.
+* A book can be loaned (lent or borrowed) in 0 to many loans. At same time, a loan (lend or borrow) can involve one or many books.
+* A book is associated with 0 or many transactions. At same time, a transaction can involve one or many books.
+
 ## Optimizations
 
 In this section you should answer the following questions:
