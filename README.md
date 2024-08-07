@@ -155,7 +155,7 @@ The `borrows` table includes:
 
 All columns are required except for `due_date` and `return_date`.
 
-##### Books on Borrow
+#### Books on Borrow
 
 The `books_on_borrow` table is an association table between `borrows` and `books` and includes:
 
