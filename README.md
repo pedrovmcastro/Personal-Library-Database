@@ -86,6 +86,7 @@ The `books` table includes:
 * `genre`, which specifies the genre of the book as `TEXT`.
 * `rating`, which specifies the rating of the book as a `NUMERIC` value between 0 and 5.
 * `location`, which specifies the location of the book (e.g., shelf, kindle) as `TEXT`.
+* `isbn`, which represents the International Standart Book Number as `TEXT`. 
 * `is_read`, which indicates if the book has been read as a `BOOLEAN` with a default value of `FALSE`.
 * `sold`, which indicates if the book has been sold as a `BOOLEAN` with a default value of `FALSE`.
 * `lent`, which indicates if the book has been lent out as a `BOOLEAN` with a default value of `FALSE`.
@@ -166,6 +167,8 @@ The `books_on_borrow` table is an association table between `borrows` and `books
 
 ### Relationships
 
+The below entity relationship diagram describes the relationships among the entities in the database.
+
 ![ER Diagram](diagram.png)
 
 As detailed by the diagram:
@@ -181,6 +184,20 @@ As detailed by the diagram:
 In this section you should answer the following questions:
 
 * Which optimizations (e.g., indexes, views) did you create? Why?
+
+
+
+CREATE INDEX "books_index" ON "books"("id");
+
+CREATE INDEX "title_index" ON "books"("title");
+
+CREATE INDEX "books_location_index" ON "books"("location");
+
+CREATE INDEX "authors_index" ON "authors"("id");
+
+CREATE INDEX "authors_last_name_index" ON "authors"("last_name");
+
+CREATE INDEX "transactions_index" ON "transactions"("id");
 
 ## Limitations
 
