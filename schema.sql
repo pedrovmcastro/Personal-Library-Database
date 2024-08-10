@@ -81,43 +81,26 @@ CREATE TABLE "books_in_transaction" (
     PRIMARY KEY ("transaction_id", "book_id")
 );
 
-CREATE TABLE "lends" (
+CREATE TABLE "loans" (
     "id" INTEGER,
-    "lend_date" DATE NOT NULL DEFAULT CURRENT_DATE,
-    "borrower_name" TEXT NOT NULL,
-    PRIMARY KEY("id")
-);
-
--- Association table books-lend
-CREATE TABLE "books_on_lend" (
-    "lend_id" INTEGER,
-    "book_id" INTEGER,
-    "due_date" DATE, -- Each book can have its own due and return date.
-    "return_date" DATE,
-    FOREIGN KEY ("lend_id") REFERENCES "lends"("id"),
-    FOREIGN KEY ("book_id") REFERENCES "books"("id"),
-    PRIMARY KEY ("lend_id", "book_id")
-);
-
-CREATE TABLE "borrows" (
-    "id" INTEGER,
-    "entity_type" TEXT NOT NULL CHECK("entity_type" IN ('person', 'library')),
-    "entity_name" TEXT NOT NULL,
-    "borrow_date" DATE DEFAULT CURRENT_DATE,
+    "loan_date" DATE NOT NULL DEFAULT CURRENT_DATE,
+    "type" TEXT NOT NULL CHECK("type" IN ('borrow', 'lend')),
+    "loaner_type" TEXT NOT NULL CHECK("loaner_type" IN ('person', 'library')),
+    "loaner_name" TEXT NOT NULL,
     "fine_per_day" NUMERIC CHECK("fine_per_day" >= 0 AND "fine_per_day" = ROUND("fine_per_day", 2)) DEFAULT 0,
     "total_fine" NUMERIC CHECK("total_fine" >= 0 AND "total_fine" = ROUND("total_fine", 2)) DEFAULT 0,
     PRIMARY KEY("id")
 );
 
--- Association table books-borrow
-CREATE TABLE "books_on_borrow" (
-    "borrow_id" INTEGER,
+-- Association table books-loans
+CREATE TABLE "books_on_loan" (
+    "loan_id" INTEGER,
     "book_id" INTEGER,
-    "due_date" DATE, -- It can be null because with people you generally don't have a due date.
+    "due_date" DATE, -- Each book can have its own due and return date.
     "return_date" DATE,
-    FOREIGN KEY ("borrow_id") REFERENCES "borrows"("id"),
+    FOREIGN KEY ("loan_id") REFERENCES "loans"("id"),
     FOREIGN KEY ("book_id") REFERENCES "books"("id"),
-    PRIMARY KEY ("borrow_id", "book_id")
+    PRIMARY KEY ("loan_id", "book_id")
 );
 
 -- VIEWS
@@ -166,41 +149,36 @@ JOIN "transactions" ON "transactions"."id" = "books_in_transaction"."transaction
 WHERE "sold" = TRUE
 ORDER BY "timestamp";
 
--- To view all books that have been lent
-CREATE VIEW "lent_books" AS
-SELECT 
-    "id", "title", "year",
+-- To view all books that have been loaned
+CREATE VIEW "loaned_books" AS
+SELECT
+    "id", "type", "title", "year",
     (SELECT "first_name" || ' ' || "last_name"
     FROM "authors"
     JOIN "authored" ON "authored"."author_id" = "authors"."id"
     WHERE "authored"."book_id" = "books"."id"
     ORDER BY "authors"."last_name" LIMIT 1) AS "author",
-    "language", "lend_id", "borrower_name" AS "borrower", "lend_date", "due_date"      
+    "language", "loan_id", "loaner_name" AS "loaner", "loan_date", "due_date",
+    "return_date", "fine_per_day", "total_fine"       
 FROM "books"
-JOIN "books_on_lend" ON "books_on_lend"."book_id" = "books"."id"
-JOIN "lends" ON "lends"."id" = "books_on_lend"."lend_id"
-WHERE "lent" = TRUE
+JOIN "books_on_loan" ON "books_on_loan"."book_id" = "books"."id"
+JOIN "loans" ON "loans"."id" = "books_on_loan"."loan_id"
 ORDER BY "due_date", "lend_date";
+
+-- To view all books that have been lent
+CREATE VIEW "lent_books" AS
+SELECT * FROM "loaned_books" 
+WHERE "lent" = TRUE;
 
 -- To view all books that have been borrowed
 CREATE VIEW "borrowed_books" AS
-SELECT 
-    "id","title", "year",
-    (SELECT "first_name" || ' ' || "last_name"
-    FROM "authors"
-    JOIN "authored" ON "authored"."author_id" = "authors"."id"
-    WHERE "authored"."book_id" = "books"."id"
-    ORDER BY "authors"."last_name" LIMIT 1) AS "author",
-    "language", "borrow_id", "entity_name" AS "lender", "borrow_date", "due_date", "return_date", "fine_per_day", "total_fine"   
-FROM "books"
-JOIN "books_on_borrow" ON "books_on_borrow"."book_id" = "books"."id"
-JOIN "borrows" ON "borrows"."id" = "books_on_borrow"."borrow_id"
-WHERE "borrowed" = TRUE
-ORDER BY "due_date", "borrow_date";
+SELECT * FROM "loaned_books" 
+WHERE "borrowed" = TRUE;
 
 -- To view all books that have been borrowed and not yet returned
 CREATE VIEW "current_borrowed_books" AS
-SELECT * FROM "borrowed_books" WHERE "return_date" IS NULL;
+SELECT * FROM "borrowed_books" 
+WHERE "return_date" IS NULL;
 
 -- TRIGGERS
 
@@ -228,8 +206,9 @@ END;
 
 -- Trigger to update books.lent to TRUE when a new lend is inserted
 CREATE TRIGGER "lent"
-AFTER INSERT ON "books_on_lend"
+AFTER INSERT ON "books_on_loan"
 FOR EACH ROW
+WHEN (SELECT "type" FROM "loans" WHERE "id" = NEW."loan_id") = 'lend'
 BEGIN
     UPDATE "books"
     SET "lent" = TRUE, "location" = 'lent'
@@ -238,8 +217,9 @@ END;
 
 -- Trigger to update books.lent to FALSE when a lent book is returned to the user
 CREATE TRIGGER "lend_returned"
-AFTER UPDATE OF "return_date" ON "books_on_lend"
+AFTER UPDATE OF "return_date" ON "books_on_loan"
 FOR EACH ROW
+WHEN (SELECT "type" FROM "loans" WHERE "id" = NEW."loan_id") = 'lend'
 BEGIN
     UPDATE "books"
     SET "lent" = FALSE, "location" = 'shelf'
@@ -248,8 +228,9 @@ END;
     
 -- Trigger to update books.borrowed to TRUE when a new borrow is inserted
 CREATE TRIGGER "borrowed"
-AFTER INSERT ON "books_on_borrow"
+AFTER INSERT ON "books_on_loan"
 FOR EACH ROW
+WHEN (SELECT "type" FROM "loans" WHERE "id" = NEW."loan_id") = 'borrow'
 BEGIN
     UPDATE "books"
     SET "borrowed" = TRUE, "location" = 'shelf'
@@ -258,8 +239,9 @@ END;
 
 -- Trigger to update the location of books to 'returned' when they are returned
 CREATE TRIGGER "borrow_returned"
-AFTER UPDATE OF "return_date" ON "books_on_borrow"
+AFTER UPDATE OF "return_date" ON "books_on_loan"
 FOR EACH ROW
+WHEN (SELECT "type" FROM "loans" WHERE "id" = NEW."loan_id") = 'borrow'
 BEGIN
     UPDATE "books"
     SET "location" = 'returned'
