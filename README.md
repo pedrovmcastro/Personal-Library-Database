@@ -94,7 +94,7 @@ The `books` table includes:
 * `translator_id`, which specifies the ID of the translator as an `INTEGER`. This column has the `FOREIGN KEY` constraint applied, referencing the id column in the translators table.
 * `publisher_id`, which specifies the ID of the publisher as an `INTEGER`. This column has the `FOREIGN KEY` constraint applied, referencing the id column in the publishers table.
 
-All columns are required except for `year`, `edition`, `edition_year`, `rating`, and `location`.
+All columns are required except for `year`, `edition`, `edition_year`, `rating`, `location` and `isbn`.
 
 #### Authored
 
