@@ -40,6 +40,7 @@ CREATE TABLE "books" (
     "genre" TEXT NOT NULL,
     "rating" NUMERIC CHECK("rating" BETWEEN 0 AND 5),
     "location" TEXT, -- shelf, kindle, etc...
+    "isbn" TEXT, -- international standart book number
     "is_read" BOOLEAN DEFAULT FALSE,
     "sold" BOOLEAN DEFAULT FALSE,
     "lent" BOOLEAN DEFAULT FALSE,
