@@ -12,8 +12,8 @@ The purpose of this database is to allow the user to manage a personal library i
 * Authors, including basic identifying information
 * Translators, including basic identifying information
 * Publishers, including basic identifying information
-* Book loans, including the type of loan (lend or borrow), the name of people involved, the time at which the loan was made, when the book was returned, as well as fines in case of delay
-* Book transactions, including the type of transaction (purchase or sale), the name of people involved, the values, and the time at which the transaction was made
+* Book loans, including the type of loan (lend or borrow), the name of people/library involved, the time at which the loan was made, when the book was returned, as well as fines in case of delay
+* Book transactions, including the type of transaction (purchase or sale), the name of people/bookstore involved, the values, and the time at which the transaction was made
 
 Out of scope are elements like personal information of the people involved, libraries and bookstores.
 
@@ -124,43 +124,23 @@ The `books_in_transaction` table is an association table between `books` and `tr
 * `transaction_id`, which specifies the ID of the transaction as an `INTEGER`. This column has the `PRIMARY KEY` constraint applied, and the `FOREIGN KEY` constraint references the id column in the transactions table.
 * `book_id`, which specifies the ID of the book as an `INTEGER`. This column has the `PRIMARY KEY` constraint applied, and the `FOREIGN KEY` constraint references the id column in the books table.
 
-#### Lends
+#### Loans
 
-The `lends` table includes:
+The `loans` table includes:
 
-* `id`, which specifies the unique ID for the lend as an `INTEGER`. This column has the `PRIMARY KEY` constraint applied.
-* `lend_date`, which specifies the date the book was lent out as a `DATE` with a default value of CURRENT_DATE.
-* `borrower_name`, which specifies the name of the borrower as `TEXT`.
-
-All columns are required.
-
-#### Books on Lend
-
-The `books_on_lend` table is an association table between `lends` and `books` and includes:
-
-* `lend_id`, which specifies the ID of the lend as an `INTEGER`. This column has the `PRIMARY KEY` constraint applied, and the `FOREIGN KEY` constraint references the id column in the lends table.
-* `book_id`, which specifies the ID of the book as an `INTEGER`. This column has the `PRIMARY KEY` constraint applied, and the `FOREIGN KEY` constraint references the id column in the books table.
-* `due_date`, which specifies the due date for the return of the book as a `DATE`.
-* `return_date`, which specifies the actual return date of the book as a `DATE`.
-
-#### Borrows
-
-The `borrows` table includes:
-
-* `id`, which specifies the unique ID for the borrow as an `INTEGER`. This column has the `PRIMARY KEY` constraint applied.
-* `entity_type`, which specifies the type of entity involved in the borrow (either 'person' or 'library') as `TEXT`. This column has a CHECK constraint to ensure valid values.
-* `entity_name`, which specifies the name of the entity involved in the borrow as `TEXT`.
-* `borrow_date`, which specifies the date the book was borrowed as a `DATE` with a default value of CURRENT_DATE.
+* `id`, which specifies the unique ID for the loan as an `INTEGER`. This column has the `PRIMARY KEY` constraint applied.
+* `loan_date`, which specifies the date the book was loaned out, is stored as a `DATE` with a default value of CURRENT_DATE.
+* `type`, which specifies the type of loan (either 'lend' or 'borrow') as `TEXT`. This column has a CHECK constraint to ensure valid values.
+* `loaner_type`, which specifies the type of loaner (either 'person' or 'library') as `TEXT`. This column has a CHECK constraint to ensure valid values.
+* `loaner_name`, which specifies the name of the loaner as `TEXT`.
 * `fine_per_day`, which specifies the fine per day for late return as a `NUMERIC`. This column has a CHECK constraint to ensure non-negative values.
 * `total_fine`, which specifies the total fine accrued for late return as a `NUMERIC`. This column has a CHECK constraint to ensure non-negative values.
 
-All columns are required except for `due_date` and `return_date`.
+#### Books on Loan
 
-#### Books on Borrow
+The `books_on_loan` table is an association table between `loans` and `books` and includes:
 
-The `books_on_borrow` table is an association table between `borrows` and `books` and includes:
-
-* `borrow_id`, which specifies the ID of the borrow as an `INTEGER`. This column has the `PRIMARY KEY` constraint applied, and the `FOREIGN KEY` constraint references the id column in the borrows table.
+* `loan_id`, which specifies the ID of the loan as an `INTEGER`. This column has the `PRIMARY KEY` constraint applied, and the `FOREIGN KEY` constraint references the id column in the lends table.
 * `book_id`, which specifies the ID of the book as an `INTEGER`. This column has the `PRIMARY KEY` constraint applied, and the `FOREIGN KEY` constraint references the id column in the books table.
 * `due_date`, which specifies the due date for the return of the book as a `DATE`.
 * `return_date`, which specifies the actual return date of the book as a `DATE`.
@@ -176,7 +156,7 @@ As detailed by the diagram:
 * A book is written by one or many authors. Likewise, an author can write one or many books.
 * A book can be translated by 0 or only one translator. Otherwise, a translator can translate one or many books.
 * A book can be published by one and only one publisher. Whereas, a publisher can publish one or many books.
-* A book can be loaned (lent or borrowed) in 0 to many loans. At same time, a loan (lend or borrow) can involve one or many books.
+* A book can be loaned (lent or borrowed) in 0 to many loans. At same time, a loan can involve one or many books.
 * A book is associated with 0 or many transactions. At same time, a transaction can involve one or many books.
 
 ## Optimizations
