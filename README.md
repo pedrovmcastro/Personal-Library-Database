@@ -15,7 +15,7 @@ The purpose of this database is to allow the user to manage a personal library i
 * Book loans, including the type of loan (lend or borrow), the name of people/library involved, the time at which the loan was made, when the book was returned, as well as fines in case of delay
 * Book transactions, including the type of transaction (purchase or sale), the name of people/bookstore involved, the values, and the time at which the transaction was made
 
-Out of scope are elements like personal information of the people involved, libraries and bookstores.
+Elements like personal information of the people involved, as well as information about libraries and bookstores, are out of scope.
 
 ## Functional Requirements
 
@@ -185,3 +185,7 @@ In this section you should answer the following questions:
 
 * What are the limitations of your design?
 * What might your database not be able to represent very well?
+
+* The database does not support books with more than one translator.
+* The database does not support a book being published by multiple publishers simultaneously.
+* Elements like personal information of the people involved, as well as information about libraries and bookstores, are out of scope.
