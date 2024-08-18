@@ -161,30 +161,45 @@ As detailed by the diagram:
 
 ## Optimizations
 
-
 ### Views
 
-
+Views can streamline database queries by storing commonly used queries relevant to library management, thereby expediting the process and improving efficiency.
 
 #### Available Books
 
+The `available_books` view simplifies the process of searching for books in the database by automating a commom user query: identifying books that are available for reading. This include books that have not been borrowed, sold, or returned to their owner. It provides the following information about each available book: `id`, `title`, `year`, `author` (limited to one), `language`, `rating`, `location`, `category`, and `genre`. The results are sorted by `location`, `author`, and `year`, making it easier to browse through the available options.
+
 #### Books on Shelf
+
+The `books_on_shelf` view filters the `available_books` to display only those that are currently on the shelf.
 
 #### Books on Kindle
 
+The `books_on_kindle` view filters the `available_books` to display only those that are currently on the Kindle.
+
 #### Been Read
+
+The `been_read` view filters the `books` table to show only those books that have already been read, indicated by the `is_read` column being set to TRUE. The view organizes the results by `location`, `author`, and `year`.
 
 #### Sold Books
 
+The `sold_books` view filters the `books` table to show only those books that have been sold, indicated by the `sold` column being set to TRUE. The view organizes the results by `timestamp`, reflecting the time when each book was sold.
+
 #### Loaned Books
+
+The `loaned_books` view filters the `books` table to display books that have been loaned out, either lent or borrowed. This includes books where the `lent` column or the `borrowed` column is set to TRUE. The view orders the results by `due_date` and `loan_date`.
 
 #### Lent Books
 
+The `lent_books` view filters the `loaned_books` view to show only those books that have been lent out, with the `lent` column set to TRUE.
+
 #### Borrowed Books
+
+The `borrowed_books` view filters the `loaned_books` view to show only those books that have been borrowed, with the `borrowed` column set to TRUE.
 
 #### Current Borrowed Books
 
-
+The `current_borrowed_books` view filters the `borrowed_books` view to display only those books that have been borrowed and have not yet been returned, indicated by the `borrowed` column being set to TRUE and `return_date` being NULL.
 
 ### Indexes
 
