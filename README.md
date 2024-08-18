@@ -161,31 +161,68 @@ As detailed by the diagram:
 
 ## Optimizations
 
+
+### Views
+
+
+
+#### Available Books
+
+#### Books on Shelf
+
+#### Books on Kindle
+
+#### Been Read
+
+#### Sold Books
+
+#### Loaned Books
+
+#### Lent Books
+
+#### Borrowed Books
+
+#### Current Borrowed Books
+
+
+
+### Indexes
+
 In this section you should answer the following questions:
 
 * Which optimizations (e.g., indexes, views) did you create? Why?
 
-
+#### Books Index
 
 CREATE INDEX "books_index" ON "books"("id");
 
+#### Title Index
+
 CREATE INDEX "title_index" ON "books"("title");
+
+#### Books Location Index
 
 CREATE INDEX "books_location_index" ON "books"("location");
 
+#### Authors Index
+
 CREATE INDEX "authors_index" ON "authors"("id");
+
+#### Authors Last Name Index
 
 CREATE INDEX "authors_last_name_index" ON "authors"("last_name");
 
+#### Transactions Index
+
 CREATE INDEX "transactions_index" ON "transactions"("id");
+
+
+
 
 ## Limitations
 
-In this section you should answer the following questions:
-
-* What are the limitations of your design?
-* What might your database not be able to represent very well?
-
 * The database does not support books with more than one translator.
 * The database does not support a book being published by multiple publishers simultaneously.
-* Elements like personal information of the people involved, as well as information about libraries and bookstores, are out of scope.
+* Not much information about bookstores or libraries.
+* It could have more features, like a wishlist for example.
+* Managing fines would require additional logic in an external application or script.
