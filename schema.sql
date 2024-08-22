@@ -267,13 +267,10 @@ END;
 
 CREATE INDEX "books_index" ON "books"("id");
 
-CREATE INDEX "title_index" ON "books"("title");
-
-CREATE INDEX "books_location_index" ON "books"("location");
+CREATE INDEX "books_title_index" ON "books"("title");
 
 CREATE INDEX "authors_index" ON "authors"("id");
 
-CREATE INDEX "authors_last_name_index" ON "authors"("last_name");
+CREATE INDEX "authors_name_index" ON "authors"("first_name", "last_name");
 
-CREATE INDEX "transactions_index" ON "transactions"("id");
 
