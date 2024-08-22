@@ -203,36 +203,31 @@ The `current_borrowed_books` view filters the `borrowed_books` view to display o
 
 ### Indexes
 
-In this section you should answer the following questions:
-
-* Which optimizations (e.g., indexes, views) did you create? Why?
+The indexes in a database serve the purpose of ordering some of the tables to speed up the process of querying them. Instead of using a linear search that scans the entire table, ordering allows for binary search, which is so much faster. On the other hand, indexes take up storage space in the database. To avoid becoming too heavy, only 4 indexes were created, which are as follows:
 
 #### Books Index
 
-CREATE INDEX "books_index" ON "books"("id");
+CREATE INDEX `books_index` ON `books`(`id`);
+
+Since the `books` table is the main table in the database, with the most relationships and therefore the most targeted in queries and joins, it becomes indispensable for performance optimization. In this database, the `books`.`id` column is required in all views and triggers.
 
 #### Title Index
 
-CREATE INDEX "title_index" ON "books"("title");
+CREATE INDEX `books_title_index` ON `books`(`title`);
 
-#### Books Location Index
-
-CREATE INDEX "books_location_index" ON "books"("location");
+It is very common to search for books by their title. Keeping them in alphabetical order will speed up user queries.
 
 #### Authors Index
 
-CREATE INDEX "authors_index" ON "authors"("id");
+CREATE INDEX `authors_index` ON `authors`(`id`);
 
-#### Authors Last Name Index
-
-CREATE INDEX "authors_last_name_index" ON "authors"("last_name");
+The `authors` table is also heavily used in this database, where all views display the join between the `books` and `authors` tables.
 
 #### Transactions Index
 
-CREATE INDEX "transactions_index" ON "transactions"("id");
+CREATE INDEX `authors_name_index` ON `authors`(`first_name`, `last_name`);
 
-
-
+The most common way to search for authors is by using both the first and last names, which is also present in all the views created. Therefore, there is a need to create a combined index on `first_name` and `last_name`.
 
 ## Limitations
 
