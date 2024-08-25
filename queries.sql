@@ -55,23 +55,23 @@ WHERE "title" = 'Dom Casmurro';
 -- add LENDS
 
 -- If the user, for instance, wants to lend a book to his friend - let's call him Jake -, 
--- it will be necessary insert rows in the 'lends' and 'books_on_lend' tables.
+-- it will be necessary insert rows in the 'loans' and 'books_on_loan' tables.
 
-INSERT INTO "lends" ("borrower_name")
+INSERT INTO "loans" ("type", "loaner_type", "loaner_name") -- loan_date is set by default to the current datetime
 VALUES
-('Jake');
+('lend', 'person', 'Jake');
 
-INSERT INTO "books_on_lend" ("lend_id", "book_id")
+INSERT INTO "books_on_loan" ("loan_id", "book_id")
 VALUES
 (1, 4); -- The user lends the book "Os Ratos" to Jake.
 
--- The 'books_on_lend' table is an association table because the user can lend more than one book at the same time.
+-- The 'books_on_loan' table is an association table because the user can loan more than one book at the same time.
 
-INSERT INTO "lends"("borrower_name")
+INSERT INTO "loans"("type", "loaner_type", "loaner_name")
 VALUES
-('Mary');
+('lend', 'person', 'Mary');
 
-INSERT INTO "books_on_lend" ("lend_id", "book_id")
+INSERT INTO "books_on_loan" ("loan_id", "book_id")
 VALUES
 (2, 1),
 (2, 2); -- The user lends the books "Memórias Póstumas" and "Dom Casmurro" to Mary at the same time.
@@ -79,7 +79,7 @@ VALUES
 -- When the borrower returns the book, it will be necessary to update the 'return_date' in the 'books_on_lend' table.
 -- Then the 'lent' column in the 'books' table will automatically be set to 0 due to the triggers.
 
-UPDATE "books_on_lend" SET "return_date" = CURRENT_DATE
+UPDATE "books_on_loan" SET "return_date" = CURRENT_DATE
 WHERE "book_id" = 1; -- So, Mary returned 'Memórias Póstumas' but kept 'Dom Casmurro.
 
 -- add TRANSACTIONS
@@ -118,32 +118,37 @@ INSERT INTO "books_in_transaction" ("transaction_id", "book_id")
 VALUES
 (2, 3);
 
--- In this database we chose not to delete the books when they are sold, and use a soft deletion marking them as "sold" = 1
+-- In this database we chose not to delete the books when they are sold, and use a soft deletion marking them as "sold" = TRUE,
+-- which is automatically updated by the triggers
 
 -- add BORROWS
 
 -- If the user borrows a book from another library or person, the initial steps are the same
 -- for example, let's say that the user has borrowed the book "Policarpo Quaresma" from the Municipal Library.
 
+-- first adds the book
 INSERT INTO "authors" ("first_name", "last_name", "nationality")
 VALUES
 ('Lima', 'Barreto', 'brazilian');
 
+-- second the author
 INSERT INTO "books" ("title", "language", "original_language", "year", "category", "genre", "rating", "location", "publisher_id", "is_read")
 VALUES
 ('Triste Fim de Policarpo Quaresma', 'portuguese', 'portuguese', 1915, 'brazilian literature', 'novel', 3.3, 'shelf', 1, 1);
 
+-- adds in the association table
 INSERT INTO "authored" ("author_id", "book_id")
 VALUES
 (5, 6);
 
-INSERT INTO "borrows" ("entity_type", "entity_name", "fine_per_day")
+-- finally adds the borrow
+INSERT INTO "loans" ("type", "loaner_type", "loaner_name", "fine_per_day")
 VALUES
-('library', 'Municipal Library', 2);
+('borrow', 'library', 'Municipal Library', 2);
 
-INSERT INTO "books_on_borrow" ("borrow_id", "book_id", "due_date")
+INSERT INTO "books_on_loan" ("loan_id", "book_id", "due_date")
 VALUES
-(1, 6, '2024-08-14');
+(3, 6, '2024-08-14');
 
 -- Due to the use of triggers, the user does not need to worry about updating the status of books,
 -- such as "sold", "lent" and "borrowed".
