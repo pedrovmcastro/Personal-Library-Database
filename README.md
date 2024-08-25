@@ -15,7 +15,7 @@ The purpose of this database is to allow the user to manage a personal library i
 * Book loans, including the type of loan (lend or borrow), the name of people/library involved, the time at which the loan was made, when the book was returned, as well as fines in case of delay
 * Book transactions, including the type of transaction (purchase or sale), the name of people/bookstore involved, the values, and the time at which the transaction was made
 
-Elements like personal information of the people involved, as well as information about libraries and bookstores, are out of scope.
+Elements like personal information of the people involved, as well as more information about libraries and bookstores, are out of scope.
 
 ## Functional Requirements
 

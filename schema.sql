@@ -256,10 +256,6 @@ BEGIN
     WHERE "id" = NEW."book_id";
 END;
 
--- A QUESTÃO DA MULTA DA BIBLIOTECA PODE SER UMA FEATURE PARA A VERSÃO 1.1 E dai voce diz isso no design.md
--- uma outra escolha que voce no momento pensa em não implementar, registrar as entregas... tanto dos lends (quando te devolvem o livro que vc emprestou)
--- quanto no borrow (quando vc devolve o livro que pegou emprestado, seja de uma pessoa ou de uma outra biblioteca) dai aplicar as multas baseado nas diferenças das datas
-
 -- INDEXES
 
 -- To optimize this database, indexes are created to order the data, allowing for binary search, 
@@ -272,5 +268,3 @@ CREATE INDEX "books_title_index" ON "books"("title");
 CREATE INDEX "authors_index" ON "authors"("id");
 
 CREATE INDEX "authors_name_index" ON "authors"("first_name", "last_name");
-
-
