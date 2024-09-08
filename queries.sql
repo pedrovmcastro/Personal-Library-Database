@@ -182,8 +182,8 @@ JOIN "authors" ON "authored"."author_id" = "authors"."id"
 WHERE "authors"."last_name" = 'Machado';
 
 -- Check loans for a specific book
-SELECT "lends".*, "books"."title" 
-FROM "books_on_lend"
-JOIN "lends" ON "books_on_lend"."lend_id" = "lends"."id"
-JOIN "books" ON "books_on_lend"."book_id" = "books"."id"
+SELECT "loans".*, "books"."title"
+FROM "books_on_loan"
+JOIN "loans" ON "books_on_loan"."loan_id" = "loans"."id"
+JOIN "books" ON "books_on_loan"."book_id" = "books"."id"
 WHERE "books"."id" = 1;
